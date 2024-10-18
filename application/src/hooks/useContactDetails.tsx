@@ -21,7 +21,7 @@ export default function useContactDetails() {
       const response = await axios.post('', {})
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['create-contact-details'] })
+      queryClient.invalidateQueries({ queryKey: ['contact-details'] })
     },
   })
 
@@ -31,7 +31,7 @@ export default function useContactDetails() {
       const response = await axios.put('', {})
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['update-contact-details'] })
+      queryClient.invalidateQueries({ queryKey: ['contact-details'] })
     },
   })
 
@@ -41,7 +41,7 @@ export default function useContactDetails() {
       const response = await axios.delete('', {})
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['delete-contact-details'] })
+      queryClient.invalidateQueries({ queryKey: ['contact-details'] })
     },
   })
 
