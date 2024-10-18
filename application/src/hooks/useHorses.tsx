@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import axios from '@/lib/axios'
 import { Horse } from '@/models/horse'
 
-export default function useUsers() {
+export default function useHorses() {
   const queryClient = useQueryClient()
 
   const horseRetrieval = useQuery({
@@ -21,7 +21,7 @@ export default function useUsers() {
       const response = await axios.post('', {})
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['create-horse'] })
+      queryClient.invalidateQueries({ queryKey: ['horses'] })
     },
   })
 
@@ -31,7 +31,7 @@ export default function useUsers() {
       const response = await axios.put('', {})
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['update-horse'] })
+      queryClient.invalidateQueries({ queryKey: ['horses'] })
     },
   })
 
@@ -41,7 +41,7 @@ export default function useUsers() {
       const response = await axios.delete('', {})
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['delete-horse'] })
+      queryClient.invalidateQueries({ queryKey: ['horses'] })
     },
   })
 
