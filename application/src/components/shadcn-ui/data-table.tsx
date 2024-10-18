@@ -21,19 +21,19 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/shadcn_ui/table'
+} from '@/components/shadcn-ui/table'
 
-import { Button } from '@/components/shadcn_ui/button'
-import { Input } from '@/components/shadcn_ui/input'
+import { Button } from '@/components/shadcn-ui/button'
+import { Input } from '@/components/shadcn-ui/input'
 
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuTrigger,
-} from '@/components/shadcn_ui/dropdown-menu'
-import { DataTablePagination } from './data_table_pagination_controls'
-import { DataTableViewOptions } from './data_table_column_visibility_controls'
+} from '@/components/shadcn-ui/dropdown-menu'
+import { DataTablePagination } from './data-table-pagination-controls'
+import { DataTableViewOptions } from './data-table-column-visibility-controls'
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]

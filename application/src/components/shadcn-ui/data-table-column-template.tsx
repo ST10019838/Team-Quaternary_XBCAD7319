@@ -3,7 +3,7 @@
 import { ColumnDef } from '@tanstack/react-table'
 import { ArrowUpDown, MoreHorizontal } from 'lucide-react'
 
-import { Button } from '@/components/shadcn_ui/button'
+import { Button } from '@/components/shadcn-ui/button'
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,8 +11,8 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/shadcn_ui/dropdown-menu'
-import { DataTableColumnHeader } from './data_table_column_header'
+} from '@/components/shadcn-ui/dropdown-menu'
+import { DataTableColumnHeader } from './data-table-column-header'
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
