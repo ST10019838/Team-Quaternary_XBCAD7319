@@ -3,12 +3,14 @@ import {
   TabsContent,
   TabsList,
   TabsTrigger,
-} from '@/components/shadcn_ui/tabs'
-import AddressesTable from '@/components/ui/addresses_table'
-import ContactDetailsTable from '@/components/ui/contact_details_table'
-import HorsesTable from '@/components/ui/horses_table'
-import PaymentDetailsTable from '@/components/ui/payment_details_table'
-import UsersTable from '@/components/ui/users_table'
+} from '@/components/shadcn-ui/tabs'
+import AddressesTable from '@/components/ui/addresses-table'
+import ContactDetailsTable from '@/components/ui/contact-details-table'
+import { DataTable } from '@/components/shadcn-ui/data-table'
+import { columns } from '@/components/shadcn-ui/data-table-column-template'
+import HorsesTable from '@/components/ui/horses-table'
+import PaymentDetailsTable from '@/components/ui/payment-details-table'
+import UsersTable from '@/components/ui/users-table'
 
 export default function page() {
   return (
@@ -41,5 +43,33 @@ export default function page() {
         <PaymentDetailsTable />
       </TabsContent>
     </Tabs>
+
+    // <div className="container mx-auto py-10">
+    //   <DataTable columns={columns} data={payments} />
+    // </div>
   )
 }
+
+// Test data for table
+// type Payment = {
+//   id: string
+//   amount: number
+//   status: 'pending' | 'processing' | 'success' | 'failed'
+//   email: string
+// }
+
+// export const payments: Payment[] = [
+//   {
+//     id: '728ed52f',
+//     amount: 100,
+//     status: 'pending',
+//     email: 'm@example.com',
+//   },
+//   {
+//     id: '489e1d42',
+//     amount: 125,
+//     status: 'processing',
+//     email: 'example@gmail.com',
+//   },
+//   // ...
+// ]
