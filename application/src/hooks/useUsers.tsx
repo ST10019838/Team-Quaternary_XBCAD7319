@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import axios from '@/lib/axios'
-import { User } from '@/app/models/user'
+import { User } from '@/models/user'
 
 export default function useUsers() {
   const queryClient = useQueryClient()
