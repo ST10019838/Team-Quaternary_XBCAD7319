@@ -2,11 +2,11 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import axios from '@/lib/axios'
 import { PaymentDetails } from '@/models/payment-details'
 
-export default function useUsers() {
+export default function usePaymentDetails() {
   const queryClient = useQueryClient()
 
   const paymentDetailsRetrieval = useQuery({
-    queryKey: ['users'],
+    queryKey: ['payment-details'],
     queryFn: async () => {
       const { data } = await axios.get('')
       return data as PaymentDetails[]
@@ -21,7 +21,7 @@ export default function useUsers() {
       const response = await axios.post('', {})
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['create-payment-details'] })
+      queryClient.invalidateQueries({ queryKey: ['payment-details'] })
     },
   })
 
@@ -31,7 +31,7 @@ export default function useUsers() {
       const response = await axios.put('', {})
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['update-payment-details'] })
+      queryClient.invalidateQueries({ queryKey: ['payment-details'] })
     },
   })
 
@@ -41,7 +41,7 @@ export default function useUsers() {
       const response = await axios.delete('', {})
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['delete-payment-details'] })
+      queryClient.invalidateQueries({ queryKey: ['payment-details'] })
     },
   })
 
