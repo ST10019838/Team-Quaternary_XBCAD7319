@@ -26,7 +26,7 @@ export type Payment = {
 // The template for a column:
 /* 
   {
-    id: '', // Unique ID for the table across the entire table
+    id: '', // Unique ID for the column across the entire table
     accessorKey: '', // The corresponding value or property in the data
     header: '' | () => {}, // The columns table heading
     cell: ({row}) => {}, // The custom cell that will be displayed in the table
