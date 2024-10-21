@@ -24,7 +24,7 @@ export default function page() {
         <HorsesTable />
       </TabsContent>
       <TabsContent value="addresses">
-        {/* Insert Addresses Table Componenet Here */}
+        <AddressesTable />
       </TabsContent>
       <TabsContent value="contact_details">
         {/* Insert Contact Details Table Componenet Here */}
