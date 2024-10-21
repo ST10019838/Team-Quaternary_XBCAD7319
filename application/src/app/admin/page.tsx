@@ -21,7 +21,6 @@ export default function page() {
         {/* Insert Users Table Componenet Here */}
       </TabsContent>
       <TabsContent value="horses">
-        {/* Insert Horses Table Componenet Here */}
         <HorsesTable />
       </TabsContent>
       <TabsContent value="addresses">

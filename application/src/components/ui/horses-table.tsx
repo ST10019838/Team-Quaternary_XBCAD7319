@@ -11,6 +11,8 @@ import {
 import { ChevronDown, MoreHorizontal } from 'lucide-react'
 import { DataTable } from '../shadcn-ui/data-table'
 import { useState } from 'react'
+import { Horse } from '@/models/horse'
+import useHorses from '@/hooks/useHorses'
 
 // Sample data for horses
 const initialData: Horse[] = [
@@ -43,18 +45,27 @@ const initialData: Horse[] = [
   },
 ]
 
-export type Horse = {
-  id: string
-  name: string
-  age: number
-  breed: string
-  yearsWorked: number
-  skillLevel: 'Beginner' | 'Intermediate' | 'Advanced'
-  createdBy: string
-}
-
 export default function HorsesTable() {
   const [data, setData] = useState<Horse[]>(initialData)
+
+  const {
+    horses,
+    isFecthing,
+    isFetchError,
+    fetchError,
+    createHorse,
+    isCreating,
+    isCreationError,
+    creationError,
+    updateHorse,
+    isUpdating,
+    isUpdatingError,
+    updationError,
+    deleteHorse,
+    isDeleting,
+    isDeletionError,
+    deletionError,
+  } = useHorses()
 
   const handleSkillChange = (id: string, newSkill: Horse['skillLevel']) => {
     setData((prevData) =>
@@ -80,15 +91,13 @@ export default function HorsesTable() {
     {
       accessorKey: 'age',
       header: 'Age',
-      cell: ({ row }) => (
-        <div className="text-center">{row.getValue('age')}</div>
-      ),
+      cell: ({ row }) => <div className="text-center">{row.original.age}</div>,
     },
     {
       accessorKey: 'yearsWorked',
       header: 'Years Worked',
       cell: ({ row }) => (
-        <div className="text-center">{row.getValue('yearsWorked')}</div>
+        <div className="text-center">{row.original.yearsWorked}</div>
       ),
     },
     {

@@ -8,7 +8,7 @@ export default function useHorses() {
   const horseRetrieval = useQuery({
     queryKey: ['horses'],
     queryFn: async () => {
-      const { data } = await axios.get('')
+      const { data } = await axios.get('/horse')
       return data as Horse[]
     },
     refetchInterval: 1000 * 60 * 2, // refetch every 2 mins
