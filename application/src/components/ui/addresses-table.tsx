@@ -10,6 +10,8 @@ import {
 } from '@/components/shadcn-ui/dropdown-menu'
 import { MoreHorizontal } from 'lucide-react'
 import { DataTable } from '../shadcn-ui/data-table'
+import { Address } from '@/models/address'
+import useAddresses from '@/hooks/useAddresses'
 
 // Sample data for addresses in Pretoria, South Africa
 const data: Address[] = [
@@ -20,16 +22,11 @@ const data: Address[] = [
   { id: 5, address: '202 Allandale Road, Midrand, Gauteng' },
 ]
 
-export type Address = {
-  id: number
-  address: string
-}
-
 export const columns: ColumnDef<Address>[] = [
   {
     accessorKey: 'id',
     header: 'Number',
-    cell: ({ row }) => <div className="text-left">{row.getValue('id')}</div>,
+    cell: ({ row }) => <div className="text-left">{row.original.id}</div>,
   },
   {
     accessorKey: 'address',
@@ -59,6 +56,30 @@ export const columns: ColumnDef<Address>[] = [
 ]
 
 export default function AddressesTable() {
+  const {
+    address,
+    isFecthing,
+    isFetchError,
+    fetchError,
+    createAddress,
+    isCreating,
+    isCreationError,
+    creationError,
+    updateAddress,
+    isUpdating,
+    isUpdatingError,
+    updationError,
+    deleteAddress,
+    isDeleting,
+    isDeletionError,
+    deletionError,
+  } = useAddresses()
+
+  console.log(address)
+  console.log(isFecthing)
+  console.log(isFetchError)
+  console.log(fetchError)
+
   return (
     <div className="container mx-auto py-10">
       <DataTable columns={columns} data={data} />

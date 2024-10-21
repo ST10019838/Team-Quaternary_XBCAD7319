@@ -8,7 +8,7 @@ export default function useAddresses() {
   const addressRetrieval = useQuery({
     queryKey: ['addresses'],
     queryFn: async () => {
-      const { data } = await axios.get('')
+      const { data } = await axios.get('/address')
       return data as Address[]
     },
     refetchInterval: 1000 * 60 * 2, // refetch every 2 mins
@@ -46,7 +46,7 @@ export default function useAddresses() {
   })
 
   return {
-    addresss: addressRetrieval.data,
+    address: addressRetrieval.data,
     isFecthing: addressRetrieval.isLoading,
     isFetchError: addressRetrieval.isError,
     fetchError: addressRetrieval.error,
