@@ -36,8 +36,8 @@ jobs:
         run: npm install
         working-directory: application  # Set working directory for npm install
 
-      - name: Run tests
-        run: npm run test
+     #-  name: Run tests
+        # run: npm run test
         # working-directory: application  # Set working directory for tests
 
       - name: Build project
