@@ -3,10 +3,10 @@ name: CI for Next.js App
 on:
   push:
     branches:
-      - main  # Run on every push to the CI/Pipeline branch
+      - CI/Pipeline  # Run on every push to the CI/Pipeline branch
   pull_request:
     branches:
-      - main  # Run on every PR to the CI/Pipeline branch
+      - CI/Pipeline  # Run on every PR to the CI/Pipeline branch
 
 jobs:
   build:
@@ -16,6 +16,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      - name: Set working directory
+        run: cd application  # Change to the directory containing package.json
+
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
@@ -24,26 +27,30 @@ jobs:
       - name: Cache node modules
         uses: actions/cache@v3
         with:
-          path: node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
+          path: application/node_modules  # Update path to node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('application/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node-
 
       - name: Install dependencies
         run: npm install
+        working-directory: ./application  # Set working directory for npm install
 
       - name: Run linter
-        run: npm run lint  # Assuming you have a lint script in package.json
+        run: npm run lint
+        working-directory: ./application  # Set working directory for linting
 
       - name: Run tests
-        run: npm run test  # Run your Next.js tests
+        run: npm run test
+        working-directory: ./application  # Set working directory for tests
 
       - name: Build project
-        run: npm run build  # Build the Next.js project
+        run: npm run build
+        working-directory: ./application  # Set working directory for building
 
       - name: Upload build artifacts
         if: success()
         uses: actions/upload-artifact@v3
         with:
           name: nextjs-build
-          path: .next  # Uploads the build output folder
+          path: application/.next  # Update path to build output folder
