@@ -4,13 +4,12 @@ import {
   TabsList,
   TabsTrigger,
 } from '@/components/shadcn-ui/tabs'
+import { DataTable } from '@/components/shadcn-ui/data-table'
+import UsersTable from '@/components/ui/users-table'
+import HorsesTable from '@/components/ui/horses-table'
 import AddressesTable from '@/components/ui/addresses-table'
 import ContactDetailsTable from '@/components/ui/contact-details-table'
-import { DataTable } from '@/components/shadcn-ui/data-table'
-import { columns } from '@/components/shadcn-ui/data-table-column-template'
-import HorsesTable from '@/components/ui/horses-table'
 import PaymentDetailsTable from '@/components/ui/payment-details-table'
-import UsersTable from '@/components/ui/users-table'
 
 export default function page() {
   return (

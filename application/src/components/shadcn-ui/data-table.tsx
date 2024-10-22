@@ -32,6 +32,14 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from '@/components/shadcn-ui/dropdown-menu'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/shadcn-ui/select'
+
 import { DataTablePagination } from './data-table-pagination-controls'
 import { DataTableViewOptions } from './data-table-column-visibility-controls'
 
@@ -47,6 +55,8 @@ export function DataTable<TData, TValue>({
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
+  const [selectedColumnToFilter, setSelectedColumnToFilter] =
+    useState<string>('')
 
   const table = useReactTable({
     data,
@@ -74,11 +84,35 @@ export function DataTable<TData, TValue>({
     <div>
       <div className="flex items-center py-4">
         {/* Filtering / Searching Controls */}
+        <Select onValueChange={setSelectedColumnToFilter}>
+          <SelectTrigger className="w-[180px] capitalize">
+            <SelectValue placeholder="Select a Column" />
+          </SelectTrigger>
+          <SelectContent>
+            {table
+              .getAllColumns()
+              .filter((column) => typeof column.accessorFn !== 'undefined')
+              .map((column) => {
+                return (
+                  <SelectItem className="capitalize" value={column.id}>
+                    {column.id}
+                  </SelectItem>
+                )
+              })}
+          </SelectContent>
+        </Select>
+
         <Input
-          placeholder="Filter emails..."
-          value={(table.getColumn('email')?.getFilterValue() as string) ?? ''}
+          placeholder={`Filter by ${selectedColumnToFilter}...`}
+          value={
+            (table
+              .getColumn(selectedColumnToFilter)
+              ?.getFilterValue() as string) ?? ''
+          }
           onChange={(event) =>
-            table.getColumn('email')?.setFilterValue(event.target.value)
+            table
+              .getColumn(selectedColumnToFilter)
+              ?.setFilterValue(event.target.value)
           }
           className="max-w-sm"
         />
