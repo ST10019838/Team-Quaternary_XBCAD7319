@@ -3,10 +3,10 @@ name: CI for Next.js App
 on:
   push:
     branches:
-      - CI/Pipeline  # Run on every push to the CI/Pipeline branch
+      - main  # Run on every push to the CI/Pipeline branch
   pull_request:
     branches:
-      - CI/Pipeline  # Run on every PR to the CI/Pipeline branch
+      - main  # Run on every PR to the CI/Pipeline branch
 
 jobs:
   build:
