@@ -13,16 +13,53 @@ import { MoreHorizontal } from 'lucide-react'
 import { useState } from 'react'
 import { User } from '@/models/user'
 import useUsers from '@/hooks/useUsers'
-
-
+import { DataTableColumnHeader } from '../shadcn-ui/data-table-column-header'
 
 const columns: ColumnDef<User>[] = [
-  { accessorKey: 'name', header: 'Name' },
-  { accessorKey: 'email', header: 'Email' },
-  { accessorKey: 'userRole', header: 'Role' },
-  { accessorKey: 'skillLevel', header: 'Skill Level' },
-  { accessorKey: 'age', header: 'Age' },
-  { accessorKey: 'phone', header: 'Phone' },
+  {
+    id: 'Name',
+    accessorKey: 'name',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Name" />
+    ),
+  },
+  {
+    id: 'Email',
+    accessorKey: 'email',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Email" />
+    ),
+  },
+  {
+    id: 'Role',
+    accessorKey: 'userRole',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Role" />
+    ),
+  },
+  {
+    id: 'Skill Level',
+    accessorKey: 'skillLevel',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Skill Level" />
+    ),
+  },
+  {
+    id: 'Age',
+    accessorKey: 'age',
+    // The accessor function is used to convert the data to string to enable better filtering
+    accessorFn: (row) => `${row.age.toString()}`,
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Age" />
+    ),
+  },
+  {
+    id: 'Phone',
+    accessorKey: 'phone',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Phone" />
+    ),
+  },
   {
     id: 'actions',
     cell: ({ row }) => (
@@ -66,7 +103,9 @@ export default function UsersTable() {
       {isFecthing ? (
         <p>Loading...</p>
       ) : (
-        <DataTable columns={columns} data={users as User[]} />
+        <div className="container mx-auto py-10">
+          <DataTable columns={columns} data={users as User[]} />
+        </div>
       )}
     </>
   )

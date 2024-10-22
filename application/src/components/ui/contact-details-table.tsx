@@ -13,6 +13,7 @@ import { MoreHorizontal } from 'lucide-react'
 import { useState } from 'react'
 import { ContactDetails } from '@/models/contact-details'
 import useContactDetails from '@/hooks/useContactDetails'
+import { DataTableColumnHeader } from '../shadcn-ui/data-table-column-header'
 
 const initialContacts: ContactDetails[] = [
   {
@@ -30,9 +31,27 @@ const initialContacts: ContactDetails[] = [
 ]
 
 const columns: ColumnDef<ContactDetails>[] = [
-  { accessorKey: 'name', header: 'Name' },
-  { accessorKey: 'phone', header: 'Phone' },
-  { accessorKey: 'email', header: 'Email' },
+  {
+    id: 'Name',
+    accessorKey: 'name',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Name" />
+    ),
+  },
+  {
+    id: 'Phone',
+    accessorKey: 'phone',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Phone" />
+    ),
+  },
+  {
+    id: 'Email',
+    accessorKey: 'email',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Email" />
+    ),
+  },
   {
     id: 'actions',
     cell: ({ row }) => (
@@ -71,6 +90,9 @@ export default function ContactDetailsTable() {
     deletionError,
   } = useContactDetails()
 
-
-  return <DataTable columns={columns} data={initialContacts} />
+  return (
+    <div className="container mx-auto py-10">
+      <DataTable columns={columns} data={initialContacts} />
+    </div>
+  )
 }

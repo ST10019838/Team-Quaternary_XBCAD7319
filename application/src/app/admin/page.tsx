@@ -13,9 +13,9 @@ import PaymentDetailsTable from '@/components/ui/payment-details-table'
 
 export default function page() {
   return (
-    <div className="bg-rose-500">
-      <Tabs defaultValue="users" className="">
-        <TabsList>
+    <div className="">
+      <Tabs defaultValue="users" className="flex flex-col">
+        <TabsList className="mx-auto">
           <TabsTrigger value="users">Users</TabsTrigger>
           <TabsTrigger value="horses">Horses</TabsTrigger>
           <TabsTrigger value="addresses">Addresses</TabsTrigger>

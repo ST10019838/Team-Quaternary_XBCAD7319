@@ -43,14 +43,23 @@ import {
 import { DataTablePagination } from './data-table-pagination-controls'
 import { DataTableViewOptions } from './data-table-column-visibility-controls'
 
+import { Separator } from '@/components/shadcn-ui/separator'
+import { FilterX } from 'lucide-react'
+
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
+  isLoading?: boolean
+  isError?: boolean
+  error?: string
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
+  isLoading,
+  isError,
+  error,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
@@ -80,45 +89,75 @@ export function DataTable<TData, TValue>({
     },
   })
 
+  // console.log(table.getColumn(selectedColumnToFilter))
+
   return (
     <div>
-      <div className="flex items-center py-4">
+      <div className="flex items-center justify-between py-4">
         {/* Filtering / Searching Controls */}
-        <Select onValueChange={setSelectedColumnToFilter}>
-          <SelectTrigger className="w-[180px] capitalize">
-            <SelectValue placeholder="Select a Column" />
-          </SelectTrigger>
-          <SelectContent>
-            {table
-              .getAllColumns()
-              .filter((column) => typeof column.accessorFn !== 'undefined')
-              .map((column) => {
-                return (
-                  <SelectItem className="capitalize" value={column.id}>
-                    {column.id}
-                  </SelectItem>
-                )
-              })}
-          </SelectContent>
-        </Select>
+        <div className="flex min-w-max items-center gap-3">
+          {/* The button was getting squashed even though there was enough space resulting in manually setting a minimum size */}
+          <Button
+            variant="outline"
+            size="icon"
+            className="min-h-10 min-w-10"
+            onClick={() => {
+              setSelectedColumnToFilter('')
+              table.resetColumnFilters()
+            }}
+          >
+            <FilterX />
+          </Button>
 
-        <Input
-          placeholder={`Filter by ${selectedColumnToFilter}...`}
-          value={
-            (table
-              .getColumn(selectedColumnToFilter)
-              ?.getFilterValue() as string) ?? ''
-          }
-          onChange={(event) =>
-            table
-              .getColumn(selectedColumnToFilter)
-              ?.setFilterValue(event.target.value)
-          }
-          className="max-w-sm"
-        />
+          <Separator orientation="vertical" className="h-[16px]" />
+
+          <Select
+            onValueChange={(value) => {
+              table.resetColumnFilters()
+
+              setSelectedColumnToFilter(() => value)
+            }}
+            value={selectedColumnToFilter}
+          >
+            <SelectTrigger className="min-w-[180px] max-w-max space-x-3 capitalize">
+              <SelectValue placeholder="Select a Column To Filter" />
+            </SelectTrigger>
+            <SelectContent>
+              {table
+                .getAllColumns()
+                .filter((column) => typeof column.accessorFn !== 'undefined')
+                .map((column) => {
+                  return (
+                    <SelectItem key={column.id} value={column.id}>
+                      {column.id}
+                    </SelectItem>
+                  )
+                })}
+            </SelectContent>
+          </Select>
+
+          {selectedColumnToFilter !== '' && (
+            <Input
+              placeholder={`Filter by ${selectedColumnToFilter}...`}
+              value={
+                (table
+                  .getColumn(selectedColumnToFilter)
+                  ?.getFilterValue() as string) ?? ''
+              }
+              onChange={(event) => {
+                table
+                  .getColumn(selectedColumnToFilter)
+                  ?.setFilterValue(event.target.value)
+              }}
+              className="max-w-sm"
+            />
+          )}
+        </div>
 
         {/* Column Visibility Controls */}
-        <DataTableViewOptions table={table} />
+        <div>
+          <DataTableViewOptions table={table} />
+        </div>
 
         {/* <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -170,7 +209,25 @@ export function DataTable<TData, TValue>({
             ))}
           </TableHeader>
           <TableBody>
-            {table.getRowModel().rows?.length ? (
+            {true ? (
+              <TableRow>
+                <TableCell
+                  colSpan={columns.length}
+                  className="h-24 text-center"
+                >
+                  <span className="animate-pulse">Loading...</span>
+                </TableCell>
+              </TableRow>
+            ) : isError ? (
+              <TableRow>
+                <TableCell
+                  colSpan={columns.length}
+                  className="h-24 text-center text-rose-500"
+                >
+                  Error: {error}
+                </TableCell>
+              </TableRow>
+            ) : table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}

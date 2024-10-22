@@ -13,6 +13,7 @@ import { MoreHorizontal } from 'lucide-react'
 import { useState } from 'react'
 import { PaymentDetails } from '@/models/payment-details'
 import usePaymentDetails from '@/hooks/usePaymentDetails'
+import { DataTableColumnHeader } from '../shadcn-ui/data-table-column-header'
 
 //DUMMY DATA THAT NEEDS TO CHANGE
 // const initialPayments: PaymentDetails[] = [
@@ -25,7 +26,13 @@ const columns: ColumnDef<PaymentDetails>[] = [
   // { accessorKey: 'amount', header: 'Amount' },
   // { accessorKey: 'date', header: 'Date' },
   // { accessorKey: 'status', header: 'Status' },
-  { accessorKey: 'paymentDetails', header: 'Payment Details' },
+  {
+    id: 'Payment Details',
+    accessorKey: 'paymentDetails',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Payment Details" />
+    ),
+  },
   {
     id: 'actions',
     cell: ({ row }) => (
@@ -71,10 +78,12 @@ export default function PaymentDetailsTable() {
       {isFetching ? (
         <p>Loading...</p>
       ) : (
-        <DataTable
-          columns={columns}
-          data={paymentDetails as PaymentDetails[]}
-        />
+        <div className="container mx-auto py-10">
+          <DataTable
+            columns={columns}
+            data={paymentDetails as PaymentDetails[]}
+          />
+        </div>
       )}
     </>
   )

@@ -13,6 +13,7 @@ import { DataTable } from '../shadcn-ui/data-table'
 import { useState } from 'react'
 import { Horse } from '@/models/horse'
 import useHorses from '@/hooks/useHorses'
+import { DataTableColumnHeader } from '../shadcn-ui/data-table-column-header'
 
 // Sample data for horses
 const initialData: Horse[] = [
@@ -42,6 +43,115 @@ const initialData: Horse[] = [
     yearsWorked: 4,
     skillLevel: 'Beginner',
     createdBy: 'Tom Johnson',
+  },
+]
+
+const columns: ColumnDef<Horse>[] = [
+  {
+    id: 'Created By',
+    accessorKey: 'createdBy',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Created By" />
+    ),
+  },
+  {
+    id: 'Name',
+    accessorKey: 'name',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Name" />
+    ),
+  },
+  {
+    id: 'Breed',
+    accessorKey: 'breed',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Breed" />
+    ),
+  },
+  {
+    id: 'Age',
+    accessorKey: 'age',
+    // The accessor function is used to convert the data to string to enable better filtering
+    accessorFn: (row) => `${row.age.toString()}`,
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Age" />
+    ),
+    cell: ({ row }) => <div className="text-center">{row.original.age}</div>,
+  },
+  {
+    id: 'Years Worked',
+    accessorKey: 'yearsWorked',
+    // The accessor function is used to convert the data to string to enable better filtering
+    accessorFn: (row) => `${row.yearsWorked.toString()}`,
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Years Worked" />
+    ),
+    cell: ({ row }) => (
+      <div className="text-center">{row.original.yearsWorked}</div>
+    ),
+  },
+  {
+    id: 'Skill Level',
+    accessorKey: 'skillLevel',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Skill Level" />
+    ),
+    cell: ({ row }) => {
+      const horse = row.original
+      return (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" size="sm">
+              {horse.skillLevel}
+              <ChevronDown className="ml-2 h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent>
+            <DropdownMenuItem
+            // onClick={() => handleSkillChange(horse.id, 'Beginner')}
+            >
+              Beginner
+            </DropdownMenuItem>
+            <DropdownMenuItem
+            // onClick={() => handleSkillChange(horse.id, 'Intermediate')}
+            >
+              Intermediate
+            </DropdownMenuItem>
+            <DropdownMenuItem
+            // onClick={() => handleSkillChange(horse.id, 'Advanced')}
+            >
+              Advanced
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      )
+    },
+  },
+  {
+    id: 'actions',
+    enableHiding: false,
+    cell: ({ row }) => {
+      const horse = row.original
+      return (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" className="h-8 w-8 p-0">
+              <span className="sr-only">Open menu</span>
+              <MoreHorizontal className="h-4 w-4" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem
+              onClick={() => navigator.clipboard.writeText(horse.id)}
+            >
+              Copy horse ID
+            </DropdownMenuItem>
+            <DropdownMenuItem>View details</DropdownMenuItem>
+            <DropdownMenuItem>Contact owner</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      )
+    },
   },
 ]
 
@@ -75,96 +185,9 @@ export default function HorsesTable() {
     )
   }
 
-  const columns: ColumnDef<Horse>[] = [
-    {
-      accessorKey: 'createdBy',
-      header: 'Created By',
-    },
-    {
-      accessorKey: 'name',
-      header: 'Name',
-    },
-    {
-      accessorKey: 'breed',
-      header: 'Breed',
-    },
-    {
-      accessorKey: 'age',
-      header: 'Age',
-      cell: ({ row }) => <div className="text-center">{row.original.age}</div>,
-    },
-    {
-      accessorKey: 'yearsWorked',
-      header: 'Years Worked',
-      cell: ({ row }) => (
-        <div className="text-center">{row.original.yearsWorked}</div>
-      ),
-    },
-    {
-      accessorKey: 'skillLevel',
-      header: 'Skill Level',
-      cell: ({ row }) => {
-        const horse = row.original
-        return (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm">
-                {horse.skillLevel}
-                <ChevronDown className="ml-2 h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent>
-              <DropdownMenuItem
-                onClick={() => handleSkillChange(horse.id, 'Beginner')}
-              >
-                Beginner
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => handleSkillChange(horse.id, 'Intermediate')}
-              >
-                Intermediate
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                onClick={() => handleSkillChange(horse.id, 'Advanced')}
-              >
-                Advanced
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        )
-      },
-    },
-    {
-      id: 'actions',
-      enableHiding: false,
-      cell: ({ row }) => {
-        const horse = row.original
-        return (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-8 w-8 p-0">
-                <span className="sr-only">Open menu</span>
-                <MoreHorizontal className="h-4 w-4" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem
-                onClick={() => navigator.clipboard.writeText(horse.id)}
-              >
-                Copy horse ID
-              </DropdownMenuItem>
-              <DropdownMenuItem>View details</DropdownMenuItem>
-              <DropdownMenuItem>Contact owner</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        )
-      },
-    },
-  ]
-
   return (
     <div className="container mx-auto py-10">
-      <DataTable columns={columns} data={data} />
+      <DataTable columns={columns} data={initialData} />
     </div>
   )
 }

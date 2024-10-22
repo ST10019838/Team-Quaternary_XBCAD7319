@@ -12,6 +12,7 @@ import { MoreHorizontal } from 'lucide-react'
 import { DataTable } from '../shadcn-ui/data-table'
 import { Address } from '@/models/address'
 import useAddresses from '@/hooks/useAddresses'
+import { DataTableColumnHeader } from '../shadcn-ui/data-table-column-header'
 
 // Sample data for addresses in Pretoria, South Africa
 const data: Address[] = [
@@ -24,13 +25,21 @@ const data: Address[] = [
 
 export const columns: ColumnDef<Address>[] = [
   {
+    id: 'Number',
     accessorKey: 'id',
-    header: 'Number',
+    // The accessor function is used to convert the data to string to enable better filtering
+    accessorFn: (row) => `${row.id.toString()}`,
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Number" />
+    ),
     cell: ({ row }) => <div className="text-left">{row.original.id}</div>,
   },
   {
+    id: 'Address',
     accessorKey: 'address',
-    header: 'Address',
+    header: ({ column }) => (
+      <DataTableColumnHeader column={column} title="Address" />
+    ),
   },
   {
     id: 'actions',
