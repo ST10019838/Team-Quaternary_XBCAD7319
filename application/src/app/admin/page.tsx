@@ -6,6 +6,7 @@ import {
 } from '@/components/shadcn-ui/tabs'
 import { DataTable } from '@/components/shadcn-ui/data-table'
 import HorsesTable from '@/components/ui/horses-table'
+import AddressesTable from '@/components/ui/addresses-table'
 
 export default function page() {
   return (
