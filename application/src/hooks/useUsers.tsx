@@ -8,7 +8,7 @@ export default function useUsers() {
   const userRetrieval = useQuery({
     queryKey: ['users'],
     queryFn: async () => {
-      const { data } = await axios.get('')
+      const { data } = await axios.get('/user')
       return data as User[]
     },
     refetchInterval: 1000 * 60 * 2, // refetch every 2 mins
