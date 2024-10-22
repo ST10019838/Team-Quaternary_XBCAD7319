@@ -8,7 +8,7 @@ export default function useContactDetails() {
   const contactDetailsRetrieval = useQuery({
     queryKey: ['contact-details'],
     queryFn: async () => {
-      const { data } = await axios.get('')
+      const { data } = await axios.get('/contactdetails')
       return data as ContactDetails[]
     },
     refetchInterval: 1000 * 60 * 2, // refetch every 2 mins
@@ -46,7 +46,7 @@ export default function useContactDetails() {
   })
 
   return {
-    contactDetailss: contactDetailsRetrieval.data,
+    contactDetails: contactDetailsRetrieval.data,
     isFecthing: contactDetailsRetrieval.isLoading,
     isFetchError: contactDetailsRetrieval.isError,
     fetchError: contactDetailsRetrieval.error,
