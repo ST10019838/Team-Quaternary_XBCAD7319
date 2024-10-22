@@ -13,30 +13,32 @@ import PaymentDetailsTable from '@/components/ui/payment-details-table'
 
 export default function page() {
   return (
-    <Tabs defaultValue="users" className="w-[400px]">
-      <TabsList>
-        <TabsTrigger value="users">Users</TabsTrigger>
-        <TabsTrigger value="horses">Horses</TabsTrigger>
-        <TabsTrigger value="addresses">Addresses</TabsTrigger>
-        <TabsTrigger value="contact_details">Contact Details</TabsTrigger>
-        <TabsTrigger value="payment_details">Payment Details</TabsTrigger>
-      </TabsList>
-      <TabsContent value="users">
-        <UsersTable />
-      </TabsContent>
-      <TabsContent value="horses">
-        <HorsesTable />
-      </TabsContent>
-      <TabsContent value="addresses">
-        <AddressesTable />
-      </TabsContent>
-      <TabsContent value="contact_details">
-        <ContactDetailsTable />
-      </TabsContent>
-      <TabsContent value="payment_details">
-        <PaymentDetailsTable />
-      </TabsContent>
-    </Tabs>
+    <div className="bg-rose-500">
+      <Tabs defaultValue="users" className="">
+        <TabsList>
+          <TabsTrigger value="users">Users</TabsTrigger>
+          <TabsTrigger value="horses">Horses</TabsTrigger>
+          <TabsTrigger value="addresses">Addresses</TabsTrigger>
+          <TabsTrigger value="contact_details">Contact Details</TabsTrigger>
+          <TabsTrigger value="payment_details">Payment Details</TabsTrigger>
+        </TabsList>
+        <TabsContent value="users">
+          <UsersTable />
+        </TabsContent>
+        <TabsContent value="horses">
+          <HorsesTable />
+        </TabsContent>
+        <TabsContent value="addresses">
+          <AddressesTable />
+        </TabsContent>
+        <TabsContent value="contact_details">
+          <ContactDetailsTable />
+        </TabsContent>
+        <TabsContent value="payment_details">
+          <PaymentDetailsTable />
+        </TabsContent>
+      </Tabs>
+    </div>
 
     // <div className="container mx-auto py-10">
     //   <DataTable columns={columns} data={payments} />
