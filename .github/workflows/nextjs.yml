@@ -34,19 +34,19 @@ jobs:
 
       - name: Install dependencies
         run: npm install
-        working-directory: ./application  # Set working directory for npm install
+        working-directory: /application  # Set working directory for npm install
 
       - name: Run linter
         run: npm run lint
-        working-directory: ./application  # Set working directory for linting
+        working-directory: /application  # Set working directory for linting
 
       - name: Run tests
         run: npm run test
-        working-directory: ./application  # Set working directory for tests
+        working-directory: /application  # Set working directory for tests
 
       - name: Build project
         run: npm run build
-        working-directory: ./application  # Set working directory for building
+        working-directory: /application  # Set working directory for building
 
       - name: Upload build artifacts
         if: success()
