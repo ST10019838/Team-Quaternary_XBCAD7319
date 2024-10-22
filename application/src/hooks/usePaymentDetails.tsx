@@ -8,7 +8,7 @@ export default function usePaymentDetails() {
   const paymentDetailsRetrieval = useQuery({
     queryKey: ['payment-details'],
     queryFn: async () => {
-      const { data } = await axios.get('')
+      const { data } = await axios.get('/paymentdetails')
       return data as PaymentDetails[]
     },
     refetchInterval: 1000 * 60 * 2, // refetch every 2 mins
@@ -46,8 +46,8 @@ export default function usePaymentDetails() {
   })
 
   return {
-    paymentDetailss: paymentDetailsRetrieval.data,
-    isFecthing: paymentDetailsRetrieval.isLoading,
+    paymentDetails: paymentDetailsRetrieval.data,
+    isFetching: paymentDetailsRetrieval.isLoading,
     isFetchError: paymentDetailsRetrieval.isError,
     fetchError: paymentDetailsRetrieval.error,
 
