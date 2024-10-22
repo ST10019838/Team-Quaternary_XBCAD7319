@@ -5,8 +5,11 @@ import {
   TabsTrigger,
 } from '@/components/shadcn-ui/tabs'
 import { DataTable } from '@/components/shadcn-ui/data-table'
+import UsersTable from '@/components/ui/users-table'
 import HorsesTable from '@/components/ui/horses-table'
 import AddressesTable from '@/components/ui/addresses-table'
+import ContactDetailsTable from '@/components/ui/contact-details-table'
+import PaymentDetailsTable from '@/components/ui/payment-details-table'
 
 export default function page() {
   return (
@@ -19,7 +22,7 @@ export default function page() {
         <TabsTrigger value="payment_details">Payment Details</TabsTrigger>
       </TabsList>
       <TabsContent value="users">
-        {/* Insert Users Table Componenet Here */}
+        <UsersTable />
       </TabsContent>
       <TabsContent value="horses">
         <HorsesTable />
@@ -28,10 +31,10 @@ export default function page() {
         <AddressesTable />
       </TabsContent>
       <TabsContent value="contact_details">
-        {/* Insert Contact Details Table Componenet Here */}
+        <ContactDetailsTable />
       </TabsContent>
       <TabsContent value="payment_details">
-        {/* Insert Payment Details Table Componenet Here */}
+        <PaymentDetailsTable />
       </TabsContent>
     </Tabs>
 
