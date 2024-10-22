@@ -38,7 +38,7 @@ jobs:
 
       - name: Run tests
         run: npm run test
-        working-directory: application  # Set working directory for tests
+        # working-directory: application  # Set working directory for tests
 
       - name: Build project
         run: npm run build
