@@ -209,7 +209,7 @@ export function DataTable<TData, TValue>({
             ))}
           </TableHeader>
           <TableBody>
-            {true ? (
+            {isLoading ? (
               <TableRow>
                 <TableCell
                   colSpan={columns.length}
