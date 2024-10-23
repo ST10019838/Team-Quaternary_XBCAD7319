@@ -44,14 +44,16 @@ import { DataTablePagination } from './data-table-pagination-controls'
 import { DataTableViewOptions } from './data-table-column-visibility-controls'
 
 import { Separator } from '@/components/shadcn-ui/separator'
-import { FilterX } from 'lucide-react'
+import { CirclePlus, FilterX } from 'lucide-react'
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
   isLoading?: boolean
   isError?: boolean
-  error?: string
+  error?: Error | null
+  onAddItem?: () => {}
+  addItemForm?: React.ReactNode
 }
 
 export function DataTable<TData, TValue>({
@@ -60,6 +62,7 @@ export function DataTable<TData, TValue>({
   isLoading,
   isError,
   error,
+  addItemForm,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
@@ -88,8 +91,6 @@ export function DataTable<TData, TValue>({
       columnVisibility,
     },
   })
-
-  // console.log(table.getColumn(selectedColumnToFilter))
 
   return (
     <div>
@@ -154,9 +155,16 @@ export function DataTable<TData, TValue>({
           )}
         </div>
 
-        {/* Column Visibility Controls */}
-        <div>
-          <DataTableViewOptions table={table} />
+        <div className="flex min-w-max items-center gap-3">
+          {/* Column Visibility Controls */}
+          <div>
+            <DataTableViewOptions table={table} />
+          </div>
+
+          <Separator orientation="vertical" className="h-[16px]" />
+
+          {/* Add an Item to the Table */}
+          <div>{addItemForm}</div>
         </div>
 
         {/* <DropdownMenu>
@@ -224,7 +232,7 @@ export function DataTable<TData, TValue>({
                   colSpan={columns.length}
                   className="h-24 text-center text-rose-500"
                 >
-                  Error: {error}
+                  Error: {error?.message}
                 </TableCell>
               </TableRow>
             ) : table.getRowModel().rows?.length ? (

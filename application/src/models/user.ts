@@ -6,5 +6,5 @@ export interface User {
   age: number
   email: string
   phone?: string
-  profilePicture: object
+  profilePicture?: object
 }
