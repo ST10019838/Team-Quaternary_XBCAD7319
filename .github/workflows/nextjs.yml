@@ -40,6 +40,14 @@ jobs:
         # run: npm run test
         # working-directory: application  # Set working directory for tests
 
+      - name: SecurityCodeScan
+        uses: security-code-scan/security-code-scan-results-action@v1.3 #Static code analyser (SonarCodeScanner)
+
+      - name: SonarQube Scan
+        uses: kitabisa/sonarqube-action@v1.2.1 #Static code scan using Sonar cube
+            
+            
+
       - name: Build project
         run: npm run build
         working-directory: application  # Set working directory for building
