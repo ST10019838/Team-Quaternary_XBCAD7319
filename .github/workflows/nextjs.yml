@@ -44,21 +44,23 @@ jobs:
         # run: npm run test
         # working-directory: application
 
-            #_______________________________SECURITY SCAN SETUP_______________________________________________#
+#_______________________________SECURITY SCAN SETUP_______________________________________________#
 
       - name: Install .NET
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: '6.0' # Use the required .NET version
 
-      - name: Install Security Code Scan Globally
-        run: dotnet tool install --global SecurityCodeScan
+      - name: Create tools directory and project
+        run: |
+          mkdir -p ./tools
+          dotnet new tool-manifest --output ./tools  # Create a tool manifest to store tools in this directory
 
-      - name: Add Dotnet Tools to PATH
-        run: echo "/home/runner/.dotnet/tools" >> $GITHUB_PATH  # Adds global tool path to system PATH
+      - name: Install Security Code Scan as Project Tool
+        run: dotnet tool install SecurityCodeScan --tool-manifest ./tools/dotnet-tools.json --version 3.5.4
 
       - name: Run Security Code Scan
-        run: security-scan --output application/security-reports/security-code-scan.sarif --format sarif  # Run from global PATH
+        run: ./tools/.store/securitycodescan/3.5.4/securitycodescan/3.5.4/tools/security-scan --output application/security-reports/security-code-scan.sarif --format sarif
 
       - name: Upload SARIF Report
         uses: github/codeql-action/upload-sarif@v3
