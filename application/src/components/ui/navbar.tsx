@@ -26,19 +26,17 @@ export default function Navbar() {
   return (
     <div className="flex w-full items-center justify-center gap-3">
       {routes.map((route) => (
-        <>
-          <Button
-            variant={path.endsWith(route.link) ? 'default' : 'ghost'}
-            size="sm"
-            key={route.name}
-            asChild
-          >
-            <Link href={route.link} className={cn('flex items-center gap-2')}>
-              {route.icon}
-              {route.name}
-            </Link>
-          </Button>
-        </>
+        <Button
+          variant={path.endsWith(route.link) ? 'default' : 'ghost'}
+          size="sm"
+          key={route.name}
+          asChild
+        >
+          <Link href={route.link} className={cn('flex items-center gap-2')}>
+            {route.icon}
+            {route.name}
+          </Link>
+        </Button>
       ))}
     </div>
   )
