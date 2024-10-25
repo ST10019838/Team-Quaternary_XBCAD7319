@@ -1,14 +1,15 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import axios from '@/lib/axios'
 import { Horse } from '@/models/horse'
+import { toast } from 'sonner'
 
 export default function useHorses() {
   const queryClient = useQueryClient()
 
-  const horseRetrieval = useQuery({
+  const horses = useQuery({
     queryKey: ['horses'],
     queryFn: async () => {
-      const { data } = await axios.get('/horse')
+      const { data } = await axios.get('/horse?select=*,skillLevel(*),user(*)')
       return data as Horse[]
     },
     refetchInterval: 1000 * 60 * 2, // refetch every 2 mins
@@ -17,53 +18,59 @@ export default function useHorses() {
 
   const horseCreation = useMutation({
     mutationKey: ['create-horse'],
-    mutationFn: async () => {
-      const response = await axios.post('', {})
+    mutationFn: async (newHorse: Horse) => {
+      await axios.post('/horse', newHorse)
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['horses'] })
+
+      horseCreation.reset()
+
+      toast.success('Successfully Added Horse')
+    },
+    onError: (error) => {
+      toast.error(`An error occurred: ${error.message}`)
     },
   })
 
   const horseUpdation = useMutation({
     mutationKey: ['update-horse'],
-    mutationFn: async () => {
-      const response = await axios.put('', {})
+    mutationFn: async (horseToUpdate: Horse) => {
+      await axios.patch(`/horse?id=eq.${horseToUpdate.id}`, horseToUpdate)
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['horses'] })
+
+      horseUpdation.reset()
+
+      toast.success('Successfully Updated Horse')
+    },
+    onError: (error) => {
+      toast.error(`An error occurred: ${error.message}`)
     },
   })
 
   const horseDeletion = useMutation({
     mutationKey: ['delete-horse'],
-    mutationFn: async () => {
-      const response = await axios.delete('', {})
+    mutationFn: async (horseToDelete: Horse) => {
+      await axios.delete(`/user?id=eq.${horseToDelete.id}`)
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['horses'] })
+
+      horseDeletion.reset()
+
+      toast.success('Successfully Deleted Horse')
+    },
+    onError: (error) => {
+      toast.error(`An error occurred: ${error.message}`)
     },
   })
 
   return {
-    horses: horseRetrieval.data,
-    isFecthing: horseRetrieval.isLoading,
-    isFetchError: horseRetrieval.isError,
-    fetchError: horseRetrieval.error,
-
-    createHorse: horseCreation.mutate,
-    isCreating: horseCreation.isPending,
-    isCreationError: horseCreation.isError,
-    creationError: horseCreation.error,
-
-    updateHorse: horseUpdation.mutate,
-    isUpdating: horseUpdation.isPending,
-    isUpdatingError: horseUpdation.isError,
-    updationError: horseUpdation.error,
-
-    deleteHorse: horseDeletion.mutate,
-    isDeleting: horseDeletion.isPending,
-    isDeletionError: horseDeletion.isError,
-    deletionError: horseDeletion.error,
+    horses,
+    horseCreation,
+    horseUpdation,
+    horseDeletion,
   }
 }

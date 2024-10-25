@@ -6,3 +6,4 @@ export interface PaymentDetails {
   // date: string
   // status: 'Paid' | 'Pending'
 }
+
