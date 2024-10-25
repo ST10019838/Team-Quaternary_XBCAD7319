@@ -59,11 +59,11 @@ jobs:
           pwd  # Confirm directory
           echo "Creating tool manifest..."
           dotnet new tool-manifest || { echo 'Failed to create tool manifest.' ; exit 1; }
-          echo "Manifest creation output:"
-          ls -la  # Confirm contents of tools directory
+          echo "Manifest created successfully."
+          # List only the manifest file to avoid clutter
+          ls -l dotnet-tools.json || { echo 'Manifest file not found after creation.' ; exit 1; }
           cd ..
-          ls -R  # List all files and directories for further confirmation
-
+      
       - name: Verify Manifest Creation
         run: |
           if [ -f "./tools/dotnet-tools.json" ]; then
@@ -77,7 +77,8 @@ jobs:
         run: dotnet tool install SecurityCodeScan --tool-manifest ./tools/dotnet-tools.json --version 3.5.4
 
       - name: Run Security Code Scan
-        run: ./tools/.store/securitycodescan/3.5.4/securitycodescan/3.5.4/tools/security-scan --output application/security-reports/security-code-scan.sarif --format sarif
+        run: |
+          ./tools/.store/securitycodescan/3.5.4/securitycodescan/3.5.4/tools/security-scan --output application/security-reports/security-code-scan.sarif --format sarif || { echo 'Security scan failed.'; exit 1; }
 
       - name: Upload SARIF Report
         uses: github/codeql-action/upload-sarif@v3
