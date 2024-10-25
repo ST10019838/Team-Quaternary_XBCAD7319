@@ -51,13 +51,16 @@ jobs:
         with:
           dotnet-version: '6.0' # Use the required .NET version
 
-      - name: Create tools directory and project manifest
+      - name: Setup Tools Directory and Manifest
         run: |
-          mkdir -p ./tools
-          cd ./tools
-          dotnet new tool-manifest  # Creates dotnet-tools.json in the ./tools folder
-          cd ..  # Return to the root to ensure other commands run in the correct context
-          ls -R  # Lists all files and directories to verify the manifest location
+          echo "Creating tools directory..."
+          mkdir -p ./tools && cd ./tools
+          pwd  # Show current directory
+          dotnet new tool-manifest  # Create dotnet-tools.json in the ./tools folder
+          echo "Listing contents of tools directory after manifest creation:"
+          ls -la  # List files in tools to verify creation of dotnet-tools.json
+          cd ..
+          ls -R  # List all files and directories for verification
 
       - name: Verify Manifest Creation
         run: |
