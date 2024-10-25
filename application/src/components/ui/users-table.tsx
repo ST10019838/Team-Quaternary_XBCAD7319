@@ -19,57 +19,30 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from '@/components/shadcn-ui/card'
 
-import {
-  Drawer,
-  DrawerClose,
-  DrawerContent,
-  DrawerDescription,
-  DrawerFooter,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerTrigger,
-} from '@/components/shadcn-ui/drawer'
-
 import { Separator } from '../shadcn-ui/separator'
 import UserFormDrawer from './user-form-drawer'
 import DeletionDialog from './deletion-dialog'
-
-import { toast } from 'sonner'
+import { Badge } from '../shadcn-ui/badge'
+import { cn } from '@/lib/utils'
 
 // import { Drawer } from 'vaul'
 
 export default function UsersTable() {
   const [isTableFormOpen, setIsTableFormOpen] = useState(false)
-
-  const {
-    userRetrieval,
-    userCreation,
-    userUpdation,
-    userDeletion,
-    // users,
-    // isFecthing,
-    // isFetchError,
-    // fetchError,
-    // createUser,
-    // isCreating,
-    // isCreationError,
-    // creationError,
-    // updateUser,
-    // isUpdating,
-    // isUpdatingError,
-    // updationError,
-    // deleteUser,
-    // isDeleting,
-    // isDeletionError,
-    // deletionError,
-  } = useUsers()
+  const { users, userCreation, userUpdation, userDeletion } = useUsers()
 
   const columns: ColumnDef<User>[] = [
+    {
+      id: 'Role',
+      accessorKey: 'userRole.role',
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Role" />
+      ),
+    },
     {
       id: 'Name',
       accessorKey: 'name',
@@ -85,17 +58,10 @@ export default function UsersTable() {
       ),
     },
     {
-      id: 'Role',
-      accessorKey: 'userRole',
+      id: 'Phone',
+      accessorKey: 'phone',
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Role" />
-      ),
-    },
-    {
-      id: 'Skill Level',
-      accessorKey: 'skillLevel',
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Skill Level" />
+        <DataTableColumnHeader column={column} title="Phone" />
       ),
     },
     {
@@ -108,11 +74,30 @@ export default function UsersTable() {
       ),
     },
     {
-      id: 'Phone',
-      accessorKey: 'phone',
+      id: 'Skill Level',
+      accessorKey: 'skillLevel',
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Phone" />
+        <DataTableColumnHeader column={column} title="Skill Level" />
       ),
+      cell: ({ row }) => {
+        const skillLevel = row.original?.skillLevel?.level
+        return (
+          skillLevel != undefined && (
+            <Badge
+              variant="outline"
+              className={cn(
+                skillLevel === 'Beginner' &&
+                  'border-orange-700 text-orange-700',
+                skillLevel === 'Intermediate' &&
+                  'border-slate-500 text-slate-500',
+                skillLevel === 'Advanced' && 'border-amber-500 text-amber-500'
+              )}
+            >
+              {skillLevel}
+            </Badge>
+          )
+        )
+      },
     },
     {
       id: 'actions',
@@ -132,7 +117,7 @@ export default function UsersTable() {
                 {/* <DropdownMenuItem> */}
                 <DropdownMenuItem onClick={() => setFormIsOpen(() => true)}>
                   <Pencil className="mr-1 size-4" />
-                  Update User
+                  Edit User
                 </DropdownMenuItem>
                 {/* </DropdownMenuItem> */}
                 <DropdownMenuItem
@@ -146,6 +131,7 @@ export default function UsersTable() {
 
             <DeletionDialog
               nameOfData="user"
+              dataId={row.original.name}
               dataToDelete={row.original}
               dialogTrigger={<p></p>}
               isOpen={deletionDialogIsOpen}
@@ -180,14 +166,10 @@ export default function UsersTable() {
           <div className="container mx-auto">
             <DataTable
               columns={columns}
-              data={
-                typeof userRetrieval.data === 'undefined'
-                  ? []
-                  : userRetrieval.data
-              }
-              isLoading={userRetrieval.isLoading}
-              isError={userRetrieval.isError}
-              error={userRetrieval.error}
+              data={typeof users.data === 'undefined' ? [] : users.data}
+              isLoading={users.isLoading}
+              isError={users.isError}
+              error={users.error}
               addItemForm={
                 <UserFormDrawer
                   itemAction={userCreation}

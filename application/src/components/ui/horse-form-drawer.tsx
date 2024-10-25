@@ -33,90 +33,80 @@ import {
   DrawerTitle,
   DrawerDescription,
 } from '@/components/shadcn-ui/drawer'
-import { User } from '@/models/user'
-import { CirclePlus, Loader2, Pencil, X } from 'lucide-react'
+import { CirclePlus, Loader2, Pencil } from 'lucide-react'
 import { ReactNode } from 'react'
 import { UseMutationResult } from '@tanstack/react-query'
+import { Textarea } from '../shadcn-ui/textarea'
+import { Horse } from '@/models/horse'
 import useSkillLevels from '@/hooks/useSkillLevels'
-import useUserRoles from '@/hooks/useUserRoles'
 
-const userSchema = z.object({
-  // id: z
-  //   .number()
-  //   .int()
-  //   .positive()
-  //   .or(z.string().regex(/^\d+$/).transform(Number)),
-  userRoleId: z.number().int(),
-  skillLevelId: z.number().int().nullable().optional(),
+const horseSchema = z.object({
   name: z
     .string()
-    .min(3, { message: 'Name must be at least 3 characters long' })
+    .min(2, { message: 'Name must be at least 2 characters long' })
     .max(50, { message: 'Name must not exceed 50 characters' }),
   age: z
     .number()
     .int()
-    .positive()
-    .max(120, { message: 'Age must be 120 or less' })
-    .or(z.string().regex(/^\d+$/).transform(Number)),
-  email: z.string().email({ message: 'Invalid email address' }),
-  phone: z
+    .positive({ message: 'Age must be a positive integer' })
+    .max(40, { message: 'Age must not exceed 40 years' }),
+  breed: z
     .string()
-    // .regex(/^\+?[1-9]\d{1,14}$/, { message: 'Invalid phone number format' })
-    .optional(),
-  // profilePicture: z.object({
-  //   url: z.string().url({ message: 'Invalid URL format' }),
-  //   alt: z.string().min(1, { message: 'Alt text is required' }),
-  // }),
+    .min(2, { message: 'Breed must be at least 2 characters long' })
+    .max(50, { message: 'Breed must not exceed 50 characters' }),
+  yearsWorked: z
+    .number()
+    .int()
+    .min(0, { message: 'Years worked must be 0 or more' })
+    .max(30, { message: 'Years worked must not exceed 30' }),
+  skillLevelId: z.number().int().nullable().optional(),
 })
 
 interface Props {
   mode?: 'create' | 'update'
-  userToUpdate?: User
+  horseToUpdate?: Horse
   trigger?: ReactNode
   isOpen?: boolean
   onOpenChanged?: (open: boolean) => void
-  itemAction: UseMutationResult<void, Error, User, unknown>
+  itemAction: UseMutationResult<void, Error, Horse, unknown>
 }
 
-export default function UserFormDrawer({
+export default function HorseFormDrawer({
   mode = 'create',
-  userToUpdate,
+  horseToUpdate,
   trigger,
   isOpen,
   onOpenChanged,
   itemAction,
 }: Props) {
   const { skillLevels } = useSkillLevels()
-  const { userRoles } = useUserRoles()
-
-  const form = useForm<User>({
-    resolver: zodResolver(userSchema),
+  const form = useForm<Horse>({
+    resolver: zodResolver(horseSchema),
     defaultValues:
-      mode === 'update' && userToUpdate
+      mode === 'update' && horseToUpdate
         ? {
-            userRoleId: userToUpdate?.userRoleId,
-            skillLevelId: userToUpdate?.skillLevelId,
-            name: userToUpdate?.name,
-            age: userToUpdate?.age,
-            email: userToUpdate?.email,
-            phone: userToUpdate?.phone,
-            // profilePicture: { url: '', alt: '' },
+            name: horseToUpdate?.name,
+            age: horseToUpdate?.age,
+            breed: horseToUpdate?.breed,
+            yearsWorked: horseToUpdate?.yearsWorked,
+            skillLevelId: horseToUpdate?.skillLevel?.id,
           }
         : {
-            userRoleId: 3,
-            skillLevelId: undefined,
             name: '',
             age: 0,
-            email: '',
-            phone: '',
-            // profilePicture: { url: '', alt: '' },
+            breed: '',
+            yearsWorked: 0,
+            skillLevel: undefined,
           },
   })
 
-  const onSubmit = (data: User) => {
+  const onSubmit = (data: Horse) => {
+    // NEED TO ADD CREATED BY!
+
+    console.log(data)
     if (mode === 'create') itemAction.mutate(data)
-    else if (userToUpdate) {
-      data.id = userToUpdate?.id
+    else if (horseToUpdate) {
+      data.id = horseToUpdate?.id
       itemAction.mutate(data)
     }
 
@@ -135,7 +125,7 @@ export default function UserFormDrawer({
         ) : (
           <Button size="sm" className="hidden h-8 lg:flex">
             <CirclePlus className="mr-1 size-4" />
-            Add User
+            Add Horse
           </Button>
         )}
       </DrawerTrigger>
@@ -149,38 +139,19 @@ export default function UserFormDrawer({
       >
         <DrawerHeader>
           <DrawerTitle>
-            {mode === 'create' ? 'Add A' : 'Update'} User
+            {mode === 'create' ? 'Add a' : 'Update'} Horse
           </DrawerTitle>
           <DrawerDescription>
             Fill in the following fields to{' '}
             {mode === 'create'
-              ? 'add a new user to the application'
-              : "update a user's details"}
+              ? 'add a new horse to the application'
+              : "update a horse's details"}
           </DrawerDescription>
         </DrawerHeader>
 
         <div className="h-full overflow-auto p-5">
           <Form {...form}>
             <form className="space-y-5">
-              {/* <FormField
-                control={form.control}
-                name="id"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>ID</FormLabel>
-                    <FormControl>
-                      <Input
-                        type="number"
-                        {...field}
-                        onChange={(e) =>
-                          field.onChange(parseInt(e.target.value))
-                        }
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              /> */}
               <FormField
                 control={form.control}
                 name="name"
@@ -194,19 +165,21 @@ export default function UserFormDrawer({
                   </FormItem>
                 )}
               />
+
               <FormField
                 control={form.control}
-                name="email"
+                name="breed"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Email</FormLabel>
+                    <FormLabel>Breed</FormLabel>
                     <FormControl>
-                      <Input type="email" {...field} />
+                      <Input {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
+
               <FormField
                 control={form.control}
                 name="age"
@@ -226,49 +199,22 @@ export default function UserFormDrawer({
                   </FormItem>
                 )}
               />
+
               <FormField
                 control={form.control}
-                name="phone"
+                name="yearsWorked"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Phone (optional)</FormLabel>
+                    <FormLabel>Years Worked</FormLabel>
                     <FormControl>
-                      <Input {...field} />
+                      <Input
+                        type="number"
+                        {...field}
+                        onChange={(e) =>
+                          field.onChange(parseInt(e.target.value))
+                        }
+                      />
                     </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="userRoleId"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>User Role</FormLabel>
-                    <Select
-                      onValueChange={(value) => field.onChange(parseInt(value))}
-                      defaultValue={field.value.toString()}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select user role" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        {userRoles.isLoading ? (
-                          <SelectValue placeholder="Loading Roles..." />
-                        ) : (
-                          userRoles?.data?.map((item) => (
-                            <SelectItem
-                              key={item.id}
-                              value={item.id.toString()}
-                            >
-                              {item.role}
-                            </SelectItem>
-                          ))
-                        )}
-                      </SelectContent>
-                    </Select>
                     <FormMessage />
                   </FormItem>
                 )}
@@ -279,14 +225,13 @@ export default function UserFormDrawer({
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Skill Level</FormLabel>
-                    {/* <div className="flex items-center space-x-2"> */}
                     <Select
                       onValueChange={(value) => field.onChange(parseInt(value))}
                       defaultValue={field?.value?.toString()}
                     >
                       <FormControl>
                         <SelectTrigger>
-                          <SelectValue placeholder="Select skill level" />
+                          <SelectValue placeholder="Select a skill level" />
                         </SelectTrigger>
                       </FormControl>
                       <SelectContent>
@@ -297,47 +242,10 @@ export default function UserFormDrawer({
                         ))}
                       </SelectContent>
                     </Select>
-                    {/* {field.value && mode === 'create' && (
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => field.onChange(undefined)}
-                          className="h-8 w-8 p-0"
-                        >
-                          <X className="h-4 w-4" />
-                        </Button>
-                      )} */}
-                    {/* </div> */}
+                    <FormMessage />
                   </FormItem>
                 )}
               />
-              {/* <FormField
-              control={form.control}
-              name="profilePicture.url"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Profile Picture URL</FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="profilePicture.alt"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Profile Picture Alt Text</FormLabel>
-                  <FormControl>
-                    <Input {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            /> */}
             </form>
           </Form>
         </div>
@@ -351,23 +259,23 @@ export default function UserFormDrawer({
               itemAction.isPending ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  <span>Adding User...</span>
+                  <span>Adding Horse...</span>
                 </>
               ) : (
                 <>
                   <CirclePlus className="mr-1 size-4" />
-                  <span>Add User</span>
+                  <span>Add Horse</span>
                 </>
               )
             ) : itemAction.isPending ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                <span>Updating User...</span>
+                <span>Updating Horse...</span>
               </>
             ) : (
               <>
                 <Pencil className="mr-1 size-4" />
-                <span>Update User</span>
+                <span>Update Horse</span>
               </>
             )}
           </Button>

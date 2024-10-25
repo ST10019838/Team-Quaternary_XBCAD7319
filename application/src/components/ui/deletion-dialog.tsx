@@ -21,11 +21,11 @@ import { ReactNode, useState } from 'react'
 import { Button } from '@/components/shadcn-ui/button'
 
 import { Loader2, Trash2 } from 'lucide-react'
-import { toast } from 'sonner'
 // import { useToast } from '@/hooks/use-toast';
 
 interface Props<TData> {
   nameOfData: string
+  dataId: string
   dataToDelete: TData
   dialogTrigger?: ReactNode
   isOpen?: boolean
@@ -35,6 +35,7 @@ interface Props<TData> {
 
 export default function DeletionDialog<TData>({
   nameOfData,
+  dataId,
   dataToDelete,
   dialogTrigger,
   isOpen,
@@ -65,8 +66,9 @@ export default function DeletionDialog<TData>({
         <div className="flex flex-col gap-4 py-4">
           <span>
             Are you sure you want to{' '}
-            <span className="text-red-500 underline">delete</span> this{' '}
-            <span className="lowercase">{nameOfData}</span>?
+            <span className="text-red-500 underline">delete</span>{' '}
+            <span className="lowercase">{nameOfData}:</span>{' '}
+            <span className="capitalize">{dataId}</span> ?
           </span>
 
           {itemDeletion.isError && (

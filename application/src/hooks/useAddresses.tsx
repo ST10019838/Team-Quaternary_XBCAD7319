@@ -1,11 +1,12 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import axios from '@/lib/axios'
 import { Address } from '@/models/address'
+import { toast } from 'sonner'
 
 export default function useAddresses() {
   const queryClient = useQueryClient()
 
-  const addressRetrieval = useQuery({
+  const addresses = useQuery({
     queryKey: ['addresses'],
     queryFn: async () => {
       const { data } = await axios.get('/address')
@@ -17,53 +18,59 @@ export default function useAddresses() {
 
   const addressCreation = useMutation({
     mutationKey: ['create-address'],
-    mutationFn: async () => {
-      const response = await axios.post('', {})
+    mutationFn: async (newAddress: Address) => {
+      await axios.post('/address', newAddress)
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['addresses'] })
+
+      addressCreation.reset()
+
+      toast.success('Successfully Added Address')
+    },
+    onError: (error) => {
+      toast.error(`An error occurred: ${error.message}`)
     },
   })
 
   const addressUpdation = useMutation({
     mutationKey: ['update-address'],
-    mutationFn: async () => {
-      const response = await axios.put('', {})
+    mutationFn: async (addressToUpdate: Address) => {
+      await axios.patch(`/address?id=eq.${addressToUpdate.id}`, addressToUpdate)
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['addresses'] })
+
+      addressUpdation.reset()
+
+      toast.success('Successfully Updated Address')
+    },
+    onError: (error) => {
+      toast.error(`An error occurred: ${error.message}`)
     },
   })
 
   const addressDeletion = useMutation({
     mutationKey: ['delete-address'],
-    mutationFn: async () => {
-      const response = await axios.delete('', {})
+    mutationFn: async (addressToDelete: Address) => {
+      await axios.delete(`/address?id=eq.${addressToDelete.id}`)
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['addresses'] })
+
+      addressDeletion.reset()
+
+      toast.success('Successfully Deleted Address')
+    },
+    onError: (error) => {
+      toast.error(`An error occurred: ${error.message}`)
     },
   })
 
   return {
-    address: addressRetrieval.data,
-    isFecthing: addressRetrieval.isLoading,
-    isFetchError: addressRetrieval.isError,
-    fetchError: addressRetrieval.error,
-
-    createAddress: addressCreation.mutate,
-    isCreating: addressCreation.isPending,
-    isCreationError: addressCreation.isError,
-    creationError: addressCreation.error,
-
-    updateAddress: addressUpdation.mutate,
-    isUpdating: addressUpdation.isPending,
-    isUpdatingError: addressUpdation.isError,
-    updationError: addressUpdation.error,
-
-    deleteAddress: addressDeletion.mutate,
-    isDeleting: addressDeletion.isPending,
-    isDeletionError: addressDeletion.isError,
-    deletionError: addressDeletion.error,
+    addresses,
+    addressCreation,
+    addressUpdation,
+    addressDeletion,
   }
 }
