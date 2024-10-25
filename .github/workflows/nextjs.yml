@@ -63,6 +63,9 @@ jobs:
           # List contents of the tools directory for debugging
           echo "Contents of tools directory after creating manifest:"
           ls -la  # List all files to check for dotnet-tools.json
+          # Explicitly check the current working directory
+          echo "Current directory after manifest creation:"
+          pwd
           cd ..
 
       - name: Verify Manifest Creation
@@ -86,7 +89,6 @@ jobs:
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: application/security-reports/security-code-scan.sarif
-
 
       #- name: SonarQube Scan
         #uses: kitabisa/sonarqube-action@v1.2.1
