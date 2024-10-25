@@ -53,14 +53,16 @@ jobs:
 
       - name: Setup Tools Directory and Manifest
         run: |
-          echo "Creating tools directory..."
-          mkdir -p ./tools && cd ./tools
-          pwd  # Show current directory
-          dotnet new tool-manifest  # Create dotnet-tools.json in the ./tools folder
-          echo "Listing contents of tools directory after manifest creation:"
-          ls -la  # List files in tools to verify creation of dotnet-tools.json
+          echo "Starting setup..."
+          mkdir -p ./tools
+          cd ./tools
+          pwd  # Confirm directory
+          echo "Creating tool manifest..."
+          dotnet new tool-manifest || { echo 'Failed to create tool manifest.' ; exit 1; }
+          echo "Manifest creation output:"
+          ls -la  # Confirm contents of tools directory
           cd ..
-          ls -R  # List all files and directories for verification
+          ls -R  # List all files and directories for further confirmation
 
       - name: Verify Manifest Creation
         run: |
