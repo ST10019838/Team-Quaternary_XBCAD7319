@@ -56,17 +56,13 @@ jobs:
           echo "Starting setup..."
           mkdir -p ./tools
           cd ./tools
-          pwd  # Confirm directory
+          pwd  # Confirm current directory
           echo "Creating tool manifest..."
           dotnet new tool-manifest || { echo 'Failed to create tool manifest.' ; exit 1; }
           echo "Manifest created successfully."
-          # Confirm the presence of the manifest file with a more direct check
-          if [ -f "./dotnet-tools.json" ]; then
-            echo "Manifest file exists."
-          else
-            echo "Manifest file not found after creation."
-            exit 1
-          fi
+          # List contents of the tools directory for debugging
+          echo "Contents of tools directory:"
+          ls -la  # List all files to check for dotnet-tools.json
           cd ..
 
       - name: Verify Manifest Creation
