@@ -55,7 +55,7 @@ jobs:
         run: mkdir -p ./tools
 
       - name: Install Security Code Scan
-        run: dotnet tool install SecurityCodeScan --tool-path ./tools
+        run: dotnet tool install SecurityCodeScan --tool-path ./tools --version 3.5.4 # Specify the version explicitly if needed
 
       - name: Run Security Code Scan
         run: ./tools/security-scan --output application/security-reports/security-code-scan.sarif --format sarif
