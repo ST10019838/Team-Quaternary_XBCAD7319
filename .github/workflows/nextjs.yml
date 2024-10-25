@@ -3,10 +3,11 @@ name: CI for Next.js App
 on:
   push:
     branches:
-      - main  # Run on every push to the CI/Pipeline branch
+      - main
   pull_request:
     branches:
-      - main  # Run on every PR to the CI/Pipeline branch
+      - main
+
 #_______________________________SETUP_______________________________________________#
 jobs:
   build:
@@ -17,52 +18,55 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Set working directory
-        run: cd application  # Change to the directory containing package.json
+        run: cd application
 
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '20'  # Match local Node.js version
+          node-version: '20'
 
       - name: Cache node modules
         uses: actions/cache@v3
         with:
-          path: application/node_modules  # Update path to node_modules
+          path: application/node_modules
           key: ${{ runner.os }}-node-${{ hashFiles('application/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-node-
 
       - name: Install dependencies
         run: npm install
-        working-directory: application  # Set working directory for npm install
+        working-directory: application
 
 #_______________________________SETUP_______________________________________________#
 #_______________________________TEST________________________________________________#
 
-     #-  name: Run tests
+      #-  name: Run tests
         # run: npm run test
-        # working-directory: application  # Set working directory for tests
+        # working-directory: application
 
-      - name: SecurityCodeScan
-        uses: security-code-scan/security-code-scan-results-action@v1.3  # Static code analyser (SonarCodeScanner)
-        with:
-          sarif_directory: application/security-reports  # Directory to store the SARIF output
+      - name: Install Security Code Scan Tool
+        run: dotnet tool install --global security-scan
+
+      - name: Run Security Code Scan
+        run: security-scan --output application/security-reports/security-code-scan.sarif --format sarif
+        env:
+          PATH: ${{ runner.tool_cache }}/dotnet:$PATH
 
       - name: Upload SARIF Report
-        uses: github/codeql-action/upload-sarif@v3  # Updated to v3 for GitHub's CodeQL Action
+        uses: github/codeql-action/upload-sarif@v3
         with:
-          sarif_file: application/security-reports/security-code-scan.sarif  # Path to generated SARIF file
+          sarif_file: application/security-reports/security-code-scan.sarif
 
       #- name: SonarQube Scan
-        #uses: kitabisa/sonarqube-action@v1.2.1 #Static code scan using Sonar cube
-         #needs more config at a later stage   
-            
+        #uses: kitabisa/sonarqube-action@v1.2.1
+
 #_______________________________TEST________________________________________________#
 #______________________________BUILD________________________________________________#
 
       - name: Build project
         run: npm run build
-        working-directory: application  # Set working directory for building
+        working-directory: application
+
 #______________________________BUILD________________________________________________#
 #______________________________UPLOAD_______________________________________________#
       - name: Upload build artifacts
@@ -70,5 +74,5 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: nextjs-build
-          path: application/.next  # Update path to build output folder
+          path: application/.next
 #______________________________UPLOAD_______________________________________________#
