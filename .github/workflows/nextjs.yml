@@ -60,10 +60,15 @@ jobs:
           echo "Creating tool manifest..."
           dotnet new tool-manifest || { echo 'Failed to create tool manifest.' ; exit 1; }
           echo "Manifest created successfully."
-          # List only the manifest file to avoid clutter
-          ls -l dotnet-tools.json || { echo 'Manifest file not found after creation.' ; exit 1; }
+          # Confirm the presence of the manifest file with a more direct check
+          if [ -f "./dotnet-tools.json" ]; then
+            echo "Manifest file exists."
+          else
+            echo "Manifest file not found after creation."
+            exit 1
+          fi
           cd ..
-      
+
       - name: Verify Manifest Creation
         run: |
           if [ -f "./tools/dotnet-tools.json" ]; then
