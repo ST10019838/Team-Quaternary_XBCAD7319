@@ -50,10 +50,10 @@ jobs:
           dotnet-version: '6.x' # Use the required .NET version
 
       - name: Install Security Code Scan
-        run: dotnet tool install --global SecurityCodeScan
+        run: dotnet tool install SecurityCodeScan --tool-path ./tools
 
       - name: Run Security Code Scan
-        run: ~/.dotnet/tools/security-scan --output application/security-reports/security-code-scan.sarif --format sarif
+        run: ./tools/security-scan --output application/security-reports/security-code-scan.sarif --format sarif
 
       - name: Upload SARIF Report
         uses: github/codeql-action/upload-sarif@v3
