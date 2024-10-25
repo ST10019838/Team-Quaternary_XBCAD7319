@@ -58,15 +58,16 @@ jobs:
           cd ./tools
           pwd  # Confirm current directory
           echo "Creating tool manifest..."
-          dotnet new tool-manifest || { echo 'Failed to create tool manifest.' ; exit 1; }
+          dotnet new tool-manifest --force || { echo 'Failed to create tool manifest.' ; exit 1; }
           echo "Manifest created successfully."
           # List contents of the tools directory for debugging
-          echo "Contents of tools directory:"
+          echo "Contents of tools directory after creating manifest:"
           ls -la  # List all files to check for dotnet-tools.json
           cd ..
 
       - name: Verify Manifest Creation
         run: |
+          echo "Checking for manifest file..."
           if [ -f "./tools/dotnet-tools.json" ]; then
             echo "Manifest file exists."
           else
@@ -85,6 +86,7 @@ jobs:
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: application/security-reports/security-code-scan.sarif
+
 
       #- name: SonarQube Scan
         #uses: kitabisa/sonarqube-action@v1.2.1
