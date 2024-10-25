@@ -52,13 +52,13 @@ jobs:
           dotnet-version: '6.0' # Use the required .NET version
 
       - name: Create tools directory
-        run: mkdir -p ./tools
+        run: mkdir -p ./my-tools  # Create a new directory for tools
 
       - name: Install Security Code Scan
-        run: dotnet tool install SecurityCodeScan --tool-path ./tools --version 3.5.4 # Specify the version explicitly if needed
+        run: dotnet tool install SecurityCodeScan --tool-path ./my-tools --verbosity detailed  # Install to the new directory with verbose output
 
       - name: Run Security Code Scan
-        run: ./tools/security-scan --output application/security-reports/security-code-scan.sarif --format sarif
+        run: ./my-tools/security-scan --output application/security-reports/security-code-scan.sarif --format sarif  # Update the path here to match the new install location
 
       - name: Upload SARIF Report
         uses: github/codeql-action/upload-sarif@v3
