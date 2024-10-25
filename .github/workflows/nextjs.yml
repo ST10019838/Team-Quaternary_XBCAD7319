@@ -44,17 +44,18 @@ jobs:
         # run: npm run test
         # working-directory: application
 
-#_______________________________SECURITY SCAN SETUP_______________________________________________#
+      #_______________________________SECURITY SCAN SETUP_______________________________________________#
 
       - name: Install .NET
         uses: actions/setup-dotnet@v3
         with:
           dotnet-version: '6.0' # Use the required .NET version
 
-      - name: Create tools directory and project
+      - name: Create tools directory and project manifest
         run: |
-          mkdir -p ./tools
-          dotnet new tool-manifest --output ./tools  # Create a tool manifest to store tools in this directory
+          mkdir -p ./tools  # Creates the tools directory
+          cd ./tools
+          dotnet new tool-manifest  # This creates dotnet-tools.json in the ./tools folder
 
       - name: Install Security Code Scan as Project Tool
         run: dotnet tool install SecurityCodeScan --tool-manifest ./tools/dotnet-tools.json --version 3.5.4
@@ -66,6 +67,7 @@ jobs:
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: application/security-reports/security-code-scan.sarif
+
 
       #- name: SonarQube Scan
         #uses: kitabisa/sonarqube-action@v1.2.1
