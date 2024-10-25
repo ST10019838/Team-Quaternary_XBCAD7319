@@ -53,9 +53,10 @@ jobs:
 
       - name: Create tools directory and project manifest
         run: |
-          mkdir -p ./tools  # Creates the tools directory
+          mkdir -p ./tools
           cd ./tools
           dotnet new tool-manifest  # Creates dotnet-tools.json in the ./tools folder
+          cd ..  # Return to the root to ensure other commands run in the correct context
           ls -R  # Lists all files and directories to verify the manifest location
 
       - name: Verify Manifest Creation
