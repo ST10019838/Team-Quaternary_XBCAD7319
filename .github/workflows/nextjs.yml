@@ -44,7 +44,7 @@ jobs:
         # run: npm run test
         # working-directory: application
 
-      #_______________________________SECURITY SCAN SETUP_______________________________________________#
+#_______________________________SECURITY SCAN SETUP_______________________________________________#
 
       - name: Install .NET
         uses: actions/setup-dotnet@v3
@@ -57,6 +57,15 @@ jobs:
           cd ./tools
           dotnet new tool-manifest  # Creates dotnet-tools.json in the ./tools folder
           ls -R  # Lists all files and directories to verify the manifest location
+
+      - name: Verify Manifest Creation
+        run: |
+          if [ -f "./tools/dotnet-tools.json" ]; then
+            echo "Manifest file exists."
+          else
+            echo "Manifest file not found! Exiting..."
+            exit 1
+          fi
 
       - name: Install Security Code Scan as Project Tool
         run: dotnet tool install SecurityCodeScan --tool-manifest ./tools/dotnet-tools.json --version 3.5.4
