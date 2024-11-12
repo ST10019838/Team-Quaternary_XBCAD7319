@@ -13,3 +13,33 @@ export interface Lesson {
   paymentAmount: number
   level: 'Beginner' | 'Intermediate' | 'Advanced'
 }
+
+export interface LessonBooking {
+  id: number
+  lessonId: number
+  userId: number
+  horseId?: number
+
+  paymentConfirmed: boolean
+  usingPersonalHorse: boolean
+
+  messageForCoach?: string
+  proofOfPayment?: string
+
+  // lesson?: Lesson
+  // horse?: Horse
+  // user?: User
+}
+
+export interface LessonBooking {
+  id: number
+  lessonId: number
+  userId: number
+  horseId?: number
+
+  paymentConfirmed: boolean
+  usingPersonalHorse: boolean
+
+  messageForCoach?: string
+  proofOfPayment?: string
+}

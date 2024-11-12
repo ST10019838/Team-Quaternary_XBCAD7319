@@ -7,6 +7,7 @@ import { Separator } from '@/components/shadcn-ui/separator'
 import { Button } from '@/components/shadcn-ui/button'
 import LessonBookingCard from '@/components/ui/lesson-booking-card'
 import { Lesson } from '@/models/Lesson'
+import LessonInformationCard from '@/components/ui/lesson-information-card'
 
 const exampleLesson: Lesson = {
   id: 1,
@@ -28,7 +29,85 @@ export default function page() {
   const [date, setDate] = useState<Date | undefined>(new Date())
 
   return (
-    <div className="flex h-screen gap-5">
+    <div
+      /* className="flex h-full grow gap-5 bg-blue-500 "*/ className="flex flex-grow basis-0 gap-5"
+    >
+      <div className="flex flex-grow basis-0 flex-col gap-2">
+        <div className="flex-grow basis-0 overflow-auto bg-blue-500">
+          Item 1 asdfasdfasdf asdf sadfa sdfasdf Lorem ipsum dolor sit amet
+          consectetur adipisicing elit. Delectus dignissimos incidunt quibusdam
+          blanditiis eos. Vitae dignissimos deserunt dicta illo voluptates ut
+          neque, maxime exercitationem facere mollitia autem molestiae iure quam
+          dolorum ipsam quasi suscipit optio deleniti, obcaecati eveniet sed.
+          Tenetur laborum obcaecati distinctio ducimus ad dolor sit laboriosam
+          ut totam et veniam quibusdam molestiae voluptate corrupti quos nihil
+          nam repellendus temporibus pariatur, in dignissimos necessitatibus
+          quam nisi? Debitis velit, veritatis voluptate dignissimos aliquid
+          excepturi officia totam distinctio placeat! Architecto rem dicta
+          repellendus distinctio accusamus consectetur sint voluptas saepe
+          doloribus. Veritatis laboriosam, illum deleniti soluta molestiae
+          voluptas doloremque non nam quas quidem corrupti fuga ad ipsa
+          incidunt? Labore qui ad omnis aspernatur temporibus dolor recusandae
+          molestias ducimus voluptatibus quam dolorum reprehenderit, autem est
+          unde, beatae commodi fugit earum sed! At distinctio deleniti officiis
+          quos, incidunt ab aliquam harum, voluptates ratione illum non error
+          dignissimos minus magni expedita reprehenderit tenetur ducimus culpa
+          et itaque veniam consectetur sunt vel iste. Quasi sunt consequuntur
+          earum ut nam error rem eum voluptas labore dolor eligendi minus cum
+          similique officia sint sapiente illo, ipsa dignissimos voluptate
+          voluptates numquam. Rem beatae dolor quae explicabo unde eum tempore
+          rerum sint animi ab numquam, necessitatibus autem. Veniam, obcaecati
+          cumque? Item 1 asdfasdfasdf asdf sadfa sdfasdf Lorem ipsum dolor sit
+          amet consectetur adipisicing elit. Delectus dignissimos incidunt
+          quibusdam blanditiis eos. Vitae dignissimos deserunt dicta illo
+          voluptates ut neque, maxime exercitationem facere mollitia autem
+          molestiae iure quam dolorum ipsam quasi suscipit optio deleniti,
+          obcaecati eveniet sed. Tenetur laborum obcaecati distinctio ducimus ad
+          dolor sit laboriosam ut totam et veniam quibusdam molestiae voluptate
+          corrupti quos nihil nam repellendus temporibus pariatur, in
+          dignissimos necessitatibus quam nisi? Debitis velit, veritatis
+          voluptate dignissimos aliquid excepturi officia totam distinctio
+          placeat! Architecto rem dicta repellendus distinctio accusamus
+          consectetur sint voluptas saepe doloribus. Veritatis laboriosam, illum
+          deleniti soluta molestiae voluptas doloremque non nam quas quidem
+          corrupti fuga ad ipsa incidunt? Labore qui ad omnis aspernatur
+          temporibus dolor recusandae molestias ducimus voluptatibus quam
+          dolorum reprehenderit, autem est unde, beatae commodi fugit earum sed!
+          At distinctio deleniti officiis quos, incidunt ab aliquam harum,
+          voluptates ratione illum non error dignissimos minus magni expedita
+          reprehenderit tenetur ducimus culpa et itaque veniam consectetur sunt
+          vel iste. Quasi sunt consequuntur earum ut nam error rem eum voluptas
+          labore dolor eligendi minus cum similique officia sint sapiente illo,
+          ipsa dignissimos voluptate voluptates numquam. Rem beatae dolor quae
+          explicabo unde eum tempore rerum sint animi ab numquam, necessitatibus
+          autem. Veniam, obcaecati cumque? Item 1 asdfasdfasdf asdf sadfa
+          sdfasdf Lorem ipsum dolor sit amet consectetur adipisicing elit.
+          Delectus dignissimos incidunt quibusdam blanditiis eos. Vitae
+          dignissimos deserunt dicta illo voluptates ut neque, maxime
+          exercitationem facere mollitia autem molestiae iure quam dolorum ipsam
+          quasi suscipit optio deleniti, obcaecati eveniet sed. Tenetur laborum
+          obcaecati distinctio ducimus ad dolor sit laboriosam ut totam et
+          veniam quibusdam molestiae voluptate corrupti quos nihil nam
+          repellendus temporibus pariatur, in dignissimos necessitatibus quam
+          nisi? Debitis velit, veritatis voluptate dignissimos aliquid excepturi
+          officia totam distinctio placeat! Architecto rem dicta repellendus
+          distinctio accusamus consectetur sint voluptas saepe doloribus.
+          Veritatis laboriosam, illum deleniti soluta molestiae voluptas
+          doloremque non nam quas quidem corrupti fuga ad ipsa incidunt? Labore
+          qui ad omnis aspernatur temporibus dolor recusandae molestias ducimus
+          voluptatibus quam dolorum reprehenderit, autem est unde, beatae
+          commodi fugit earum sed! At distinctio deleniti officiis quos,
+          incidunt ab aliquam harum, voluptates ratione illum non error
+          dignissimos minus magni expedita reprehenderit tenetur ducimus culpa
+          et itaque veniam consectetur sunt vel iste. Quasi sunt consequuntur
+          earum ut nam error rem eum voluptas labore dolor eligendi minus cum
+          similique officia sint sapiente illo, ipsa dignissimos voluptate
+          voluptates numquam. Rem beatae dolor quae explicabo unde eum tempore
+          rerum sint animi ab numquam, necessitatibus autem. Veniam, obcaecati
+          cumque?
+        </div>
+      </div>
+
       {/* Calendar and Lessons Column */}
       <section className="flex max-w-max flex-col gap-3 overflow-auto">
         <Calendar
@@ -65,7 +144,13 @@ export default function page() {
 
       <Separator className="my-auto h-3/4 w-0.5" />
 
-      <LessonBookingCard lesson={exampleLesson} />
+      <LessonInformationCard lesson={exampleLesson} />
+
+      <div className="flex flex-grow basis-0 flex-col gap-2">
+        <div className="flex-grow basis-0 overflow-auto">
+          <LessonBookingCard lesson={exampleLesson} />
+        </div>
+      </div>
 
       <Separator className="my-auto h-3/4 w-0.5" />
 
