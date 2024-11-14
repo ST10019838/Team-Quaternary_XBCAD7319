@@ -63,8 +63,13 @@ const lessonBookingSchema = z.object({
   paymentConfirmed: z.boolean(),
   usingPersonalHorse: z.boolean(),
   messageForCoach: z.string().max(500).optional(),
+
+  // The following file validation was adapted from dev.to
+  // Author: Prodipta Banerjee (https://dev.to/banerjeeprodipta)
+  // Link: https://dev.to/banerjeeprodipta/validate-file-with-zod-20o
   proofOfPayment: z
     .instanceof(File)
+    // .refine((file: File) => file?.length !== 0, "File is required")
     .refine((file) => file.size <= MAX_FILE_SIZE, `Max file size is 5MB.`)
     .refine(
       (file) =>
@@ -110,7 +115,7 @@ export default function LessonBookingCard({ lesson }: { lesson: Lesson }) {
     <Card className="flex h-full w-full max-w-md flex-grow flex-col">
       <CardHeader className="flex flex-col gap-2">
         <CardTitle className="flex w-full items-center justify-center">
-          Book Lesson
+          Book A Slot
         </CardTitle>
 
         <Separator className="mx-auto h-0.5 w-3/4" />

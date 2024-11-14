@@ -6,7 +6,7 @@ export interface Lesson {
   // Fix start and end times types
   startTime: Date
   endTime: Date
-  contactNumber: number
+  contactNumber: string
   contactEmail: string
   address: string
   // Add more payment details
@@ -29,17 +29,4 @@ export interface LessonBooking {
   // lesson?: Lesson
   // horse?: Horse
   // user?: User
-}
-
-export interface LessonBooking {
-  id: number
-  lessonId: number
-  userId: number
-  horseId?: number
-
-  paymentConfirmed: boolean
-  usingPersonalHorse: boolean
-
-  messageForCoach?: string
-  proofOfPayment?: string
 }

@@ -37,7 +37,7 @@ import { format } from 'date-fns'
 
 export default function LessonInformationCard({ lesson }: { lesson: Lesson }) {
   return (
-    <Card className="w-full max-w-md">
+    <Card className="flex h-full w-full max-w-md flex-col">
       <CardHeader>
         <div className="flex items-center space-x-4">
           <Avatar className="h-12 w-12">
@@ -56,7 +56,7 @@ export default function LessonInformationCard({ lesson }: { lesson: Lesson }) {
           </div>
         </div>
       </CardHeader>
-      <CardContent className="grid gap-4">
+      <CardContent className="flex-grow space-y-4 overflow-auto">
         <div className="flex items-center space-x-2">
           <Calendar className="h-4 w-4 text-muted-foreground" />
           <span>{format(lesson.date, 'eeee, dd MMMM yyyy')}</span>
@@ -117,6 +117,34 @@ export default function LessonInformationCard({ lesson }: { lesson: Lesson }) {
             </div>
           </div>
         </div>
+
+        {/* <div>
+          Lorem ipsum dolor sit, amet consectetur adipisicing elit. Fuga a
+          veniam blanditiis eius fugit dolore sequi accusantium corporis
+          molestias quasi aliquid, consectetur mollitia quia quas ea, provident
+          perspiciatis eaque sapiente at laudantium quod dignissimos. Id
+          sapiente quisquam temporibus hic itaque libero, iure minima quia iusto
+          distinctio expedita quidem. Molestiae voluptates eligendi dolor qui
+          quos optio placeat ea dolore enim ab, impedit beatae quibusdam ex,
+          veritatis animi nesciunt dolorem aliquam excepturi at officiis fugit
+          provident, iste ullam? Laborum, quod. Reiciendis repellat repudiandae
+          et vel architecto accusamus sit neque, modi itaque necessitatibus a
+          dolores natus enim quia nihil distinctio incidunt laborum assumenda.
+        </div>
+
+        <div>
+          Lorem ipsum dolor sit, amet consectetur adipisicing elit. Fuga a
+          veniam blanditiis eius fugit dolore sequi accusantium corporis
+          molestias quasi aliquid, consectetur mollitia quia quas ea, provident
+          perspiciatis eaque sapiente at laudantium quod dignissimos. Id
+          sapiente quisquam temporibus hic itaque libero, iure minima quia iusto
+          distinctio expedita quidem. Molestiae voluptates eligendi dolor qui
+          quos optio placeat ea dolore enim ab, impedit beatae quibusdam ex,
+          veritatis animi nesciunt dolorem aliquam excepturi at officiis fugit
+          provident, iste ullam? Laborum, quod. Reiciendis repellat repudiandae
+          et vel architecto accusamus sit neque, modi itaque necessitatibus a
+          dolores natus enim quia nihil distinctio incidunt laborum assumenda.
+        </div> */}
       </CardContent>
       {/* <CardFooter>
         <Button className="w-full">Confirm Booking</Button>
