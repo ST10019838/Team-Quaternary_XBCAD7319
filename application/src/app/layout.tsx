@@ -11,6 +11,8 @@ import {
   SignedOut,
   UserButton,
 } from '@clerk/nextjs'
+import { clerkClient } from '@/lib/clerk-client'
+import { Button } from '@/components/shadcn-ui/button'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -29,8 +31,11 @@ export default function RootLayout({
       <html lang="en">
         <body className={inter.className}>
           <SignedOut>
-            <SignIn routing="hash" />
+            <div className="flex h-screen w-screen items-center justify-center">
+              <SignIn routing="hash" />
+            </div>
           </SignedOut>
+
           <SignedIn>
             <UserButton showName />
             <Providers>{children}</Providers>
