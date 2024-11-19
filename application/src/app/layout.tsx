@@ -2,6 +2,8 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
 import Providers from './providers'
+import Navbar from '@/components/ui/navbar'
+import { Toaster } from 'sonner'
 
 import {
   ClerkProvider,
@@ -37,9 +39,20 @@ export default function RootLayout({
           </SignedOut>
 
           <SignedIn>
-            <UserButton showName />
-            <Providers>{children}</Providers>
+            <Providers>
+              <div className="flex max-h-screen min-h-screen flex-col gap-10 px-10 py-5">
+                 {/* FIX NAVBAR LAYOUT */}
+                  {/* 
+                    <UserButton showName />
+                    <Providers>{children}</Providers>
+                  */}
+                <Navbar />
+                {children}
+              </div>
+            </Providers>
           </SignedIn>
+          
+          <Toaster richColors />
         </body>
       </html>
     </ClerkProvider>
