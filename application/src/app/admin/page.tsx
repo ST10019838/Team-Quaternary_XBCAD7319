@@ -13,7 +13,7 @@ import PaymentDetailsTable from '@/components/ui/payment-details-table'
 
 export default function page() {
   return (
-    <div className="">
+    <div className="w-full">
       <Tabs defaultValue="users" className="flex flex-col">
         <TabsList className="mx-auto">
           <TabsTrigger value="users">Users</TabsTrigger>
@@ -38,10 +38,6 @@ export default function page() {
           <PaymentDetailsTable />
         </TabsContent>
       </Tabs>
-    </div>
-
-    <div className="container mx-auto py-10">
-      <DataTable columns={columns} data={payments} />
     </div>
   )
 }

@@ -256,9 +256,7 @@ export default function LessonFormDrawer({
                           mode="single"
                           selected={field.value}
                           onSelect={field.onChange}
-                          disabled={(date) =>
-                            date < new Date() || date > new Date('2100-01-01')
-                          }
+                          fromDate={new Date()}
                           initialFocus
                         />
                       </PopoverContent>

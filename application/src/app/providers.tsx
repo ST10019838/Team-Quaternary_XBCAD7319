@@ -8,6 +8,9 @@ import {
   QueryClientProvider,
 } from '@tanstack/react-query'
 
+import { ThemeProvider as NextThemesProvider } from 'next-themes'
+import { useEffect, useState } from 'react'
+
 function makeQueryClient() {
   return new QueryClient({
     defaultOptions: {
@@ -36,6 +39,27 @@ function getQueryClient() {
   }
 }
 
+const ThemeProvider = ({ children }: { children: React.ReactNode }) => {
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
+  if (!mounted) return null
+
+  return (
+    <NextThemesProvider
+      attribute="class"
+      defaultTheme="system"
+      enableSystem
+      disableTransitionOnChange
+    >
+      {children}
+    </NextThemesProvider>
+  )
+}
+
 export default function Providers({ children }: { children: React.ReactNode }) {
   // NOTE: Avoid useState when initializing the query client if you don't
   //       have a suspense boundary between this and the code that may
@@ -44,6 +68,8 @@ export default function Providers({ children }: { children: React.ReactNode }) {
   const queryClient = getQueryClient()
 
   return (
-    <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider>{children}</ThemeProvider>
+    </QueryClientProvider>
   )
 }

@@ -48,9 +48,7 @@ export default function LessonSelectionCard() {
           selected={date}
           onSelect={setDate}
           // REMOVE IF ADMIN / COACH
-          disabled={(date) =>
-            date < new Date() || date > new Date('2100-01-01')
-          }
+          fromDate={new Date()}
           className="max-w-max rounded-md border"
         />
 

@@ -16,6 +16,12 @@
   }
 }
 
+/* @layer base {
+   {
+    @apply hidden;
+  }
+} */
+
 @layer utilities {
   .text-balance {
     text-wrap: balance;
