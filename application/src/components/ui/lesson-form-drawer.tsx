@@ -238,7 +238,7 @@ export default function LessonFormDrawer({
                         <FormControl>
                           <Button
                             variant={'outline'}
-                            className={`w-[240px] pl-3 text-left font-normal ${
+                            className={`w-full pl-3 text-left font-normal ${
                               !field.value && 'text-muted-foreground'
                             }`}
                           >

@@ -50,6 +50,7 @@ import { Checkbox } from '@/components/shadcn-ui/checkbox'
 import { z } from 'zod'
 import { Input } from '../shadcn-ui/input'
 import { ScrollArea } from '../shadcn-ui/scroll-area'
+import { supabase } from '@/lib/supabase-client'
 
 // The following component was adapted from a v0 generation
 // Link: https://v0.dev/
@@ -96,6 +97,21 @@ export default function LessonBookingCard({ lesson }: { lesson: Lesson }) {
     try {
       // Here you would typically send the data to your API
       console.log(data)
+
+      data.proofOfPayment.name
+
+      const res = await supabase.storage
+        .from('proof-of-payments')
+        .upload('asldkfjkj1291023ksmi123', data.proofOfPayment, {
+          upsert: true,
+        })
+
+      const test = supabase.storage
+        .from('proof-of-payments')
+        .getPublicUrl('asldkfjkj1291023ksmi123')
+      console.log(res)
+      console.log(test)
+
       // toast({
       //   title: "Booking submitted",
       //   description: "Your lesson booking has been submitted successfully.",
