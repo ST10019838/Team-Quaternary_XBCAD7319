@@ -40,14 +40,14 @@ export default function RootLayout({
 
           <SignedIn>
             <Providers>
-              <div className="flex max-h-screen min-h-screen flex-col gap-10 px-10 py-5">
+              <div className="flex max-h-screen min-h-screen flex-col gap-10 px-10 py-5 pb-5">
                  {/* FIX NAVBAR LAYOUT */}
                   {/* 
                     <UserButton showName />
                     <Providers>{children}</Providers>
                   */}
                 <Navbar />
-                {children}
+                <div className="flex flex-grow basis-0">{children}</div>
               </div>
             </Providers>
           </SignedIn>
