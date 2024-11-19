@@ -1,0 +1,110 @@
+name: CI for Next.js App
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+#_______________________________SETUP_______________________________________________#
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set working directory
+        run: cd application
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      - name: Cache node modules
+        uses: actions/cache@v3
+        with:
+          path: application/node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('application/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Install dependencies
+        run: npm install
+        working-directory: application
+
+#_______________________________SETUP_______________________________________________#
+#_______________________________TEST________________________________________________#
+
+      #-  name: Run tests
+        # run: npm run test
+        # working-directory: application
+
+#_______________________________SECURITY SCAN SETUP_______________________________________________#
+
+      - name: Install .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '6.0' # Use the required .NET version
+
+      - name: Setup Tools Directory and Manifest
+        run: |
+          echo "Starting setup..."
+          mkdir -p ./tools
+          cd ./tools
+          pwd  # Confirm current directory
+          echo "Creating tool manifest..."
+          # Use absolute path for clarity
+          MANIFEST_PATH=$(pwd)/dotnet-tools.json
+          dotnet new tool-manifest --force || { echo 'Failed to create tool manifest.' ; exit 1; }
+          echo "Manifest created successfully."
+          # List contents of the tools directory for debugging
+          echo "Contents of tools directory after creating manifest:"
+          ls -la  # List all files to check for dotnet-tools.json
+          # Explicitly check the current working directory
+          echo "Current directory after manifest creation:"
+          pwd
+          # Check if the manifest file is really there
+          if [ -f "$MANIFEST_PATH" ]; then
+            echo "Manifest file exists at $MANIFEST_PATH."
+          else
+            echo "Manifest file not found at $MANIFEST_PATH. Exiting..."
+            exit 1
+          fi
+          cd ..
+
+      - name: Install Security Code Scan as Project Tool
+        run: dotnet tool install SecurityCodeScan --tool-manifest ./tools/dotnet-tools.json --version 3.5.4
+
+      - name: Run Security Code Scan
+        run: |
+          ./tools/.store/securitycodescan/3.5.4/securitycodescan/3.5.4/tools/security-scan --output application/security-reports/security-code-scan.sarif --format sarif || { echo 'Security scan failed.'; exit 1; }
+
+      - name: Upload SARIF Report
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: application/security-reports/security-code-scan.sarif
+
+      #- name: SonarQube Scan
+        #uses: kitabisa/sonarqube-action@v1.2.1
+
+#_______________________________TEST________________________________________________#
+#______________________________BUILD________________________________________________#
+
+      - name: Build project
+        run: npm run build
+        working-directory: application
+
+#______________________________BUILD________________________________________________#
+#______________________________UPLOAD_______________________________________________#
+      - name: Upload build artifacts
+        if: success()
+        uses: actions/upload-artifact@v3
+        with:
+          name: nextjs-build
+          path: application/.next
+#______________________________UPLOAD_______________________________________________#

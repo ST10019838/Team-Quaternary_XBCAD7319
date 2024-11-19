@@ -32,21 +32,43 @@ import {
   DropdownMenuContent,
   DropdownMenuTrigger,
 } from '@/components/shadcn-ui/dropdown-menu'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/shadcn-ui/select'
+
 import { DataTablePagination } from './data-table-pagination-controls'
 import { DataTableViewOptions } from './data-table-column-visibility-controls'
+
+import { Separator } from '@/components/shadcn-ui/separator'
+import { CirclePlus, FilterX } from 'lucide-react'
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[]
   data: TData[]
+  isLoading?: boolean
+  isError?: boolean
+  error?: Error | null
+  onAddItem?: () => {}
+  addItemForm?: React.ReactNode
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
+  isLoading,
+  isError,
+  error,
+  addItemForm,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
+  const [selectedColumnToFilter, setSelectedColumnToFilter] =
+    useState<string>('')
 
   const table = useReactTable({
     data,
@@ -72,19 +94,78 @@ export function DataTable<TData, TValue>({
 
   return (
     <div>
-      <div className="flex items-center py-4">
+      <div className="flex items-center justify-between py-4">
         {/* Filtering / Searching Controls */}
-        <Input
-          placeholder="Filter emails..."
-          value={(table.getColumn('email')?.getFilterValue() as string) ?? ''}
-          onChange={(event) =>
-            table.getColumn('email')?.setFilterValue(event.target.value)
-          }
-          className="max-w-sm"
-        />
+        <div className="flex min-w-max items-center gap-3">
+          {/* The button was getting squashed even though there was enough space resulting in manually setting a minimum size */}
+          <Button
+            variant="outline"
+            size="icon"
+            className="min-h-10 min-w-10"
+            onClick={() => {
+              setSelectedColumnToFilter('')
+              table.resetColumnFilters()
+            }}
+          >
+            <FilterX />
+          </Button>
 
-        {/* Column Visibility Controls */}
-        <DataTableViewOptions table={table} />
+          <Separator orientation="vertical" className="h-[16px]" />
+
+          <Select
+            onValueChange={(value) => {
+              table.resetColumnFilters()
+
+              setSelectedColumnToFilter(() => value)
+            }}
+            value={selectedColumnToFilter}
+          >
+            <SelectTrigger className="min-w-[180px] max-w-max space-x-3 capitalize">
+              <SelectValue placeholder="Select a Column To Filter" />
+            </SelectTrigger>
+            <SelectContent>
+              {table
+                .getAllColumns()
+                .filter((column) => typeof column.accessorFn !== 'undefined')
+                .map((column) => {
+                  return (
+                    <SelectItem key={column.id} value={column.id}>
+                      {column.id}
+                    </SelectItem>
+                  )
+                })}
+            </SelectContent>
+          </Select>
+
+          {selectedColumnToFilter !== '' && (
+            <Input
+              placeholder={`Filter by ${selectedColumnToFilter}...`}
+              value={
+                (table
+                  .getColumn(selectedColumnToFilter)
+                  ?.getFilterValue() as string) ?? ''
+              }
+              onChange={(event) => {
+                table
+                  .getColumn(selectedColumnToFilter)
+                  ?.setFilterValue(event.target.value)
+              }}
+              className="max-w-sm"
+            />
+          )}
+        </div>
+
+        <div className="flex min-w-max items-center gap-3">
+          {/* Column Visibility Controls */}
+          <div>
+            <DataTableViewOptions table={table} />
+          </div>
+
+          <Separator orientation="vertical" className="h-[16px]" />
+
+          {/* Add an Item to the Table */}
+          <div>{addItemForm}</div>
+        </div>
 
         {/* <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -136,7 +217,25 @@ export function DataTable<TData, TValue>({
             ))}
           </TableHeader>
           <TableBody>
-            {table.getRowModel().rows?.length ? (
+            {isLoading ? (
+              <TableRow>
+                <TableCell
+                  colSpan={columns.length}
+                  className="h-24 text-center"
+                >
+                  <span className="animate-pulse">Loading...</span>
+                </TableCell>
+              </TableRow>
+            ) : isError ? (
+              <TableRow>
+                <TableCell
+                  colSpan={columns.length}
+                  className="h-24 text-center text-rose-500"
+                >
+                  Error: {error?.message}
+                </TableCell>
+              </TableRow>
+            ) : table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow
                   key={row.id}

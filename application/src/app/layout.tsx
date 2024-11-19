@@ -3,6 +3,18 @@ import { Inter } from 'next/font/google'
 import './globals.css'
 import Providers from './providers'
 import Navbar from '@/components/ui/navbar'
+import { Toaster } from 'sonner'
+
+import {
+  ClerkProvider,
+  SignIn,
+  SignInButton,
+  SignedIn,
+  SignedOut,
+  UserButton,
+} from '@clerk/nextjs'
+import { clerkClient } from '@/lib/clerk-client'
+import { Button } from '@/components/shadcn-ui/button'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -17,111 +29,32 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en">
-      <body className={inter.className}>
-        <Providers>
-          {/* <div className="max-w-screen flex max-h-screen min-h-screen w-full flex-col gap-3 px-10 py-5 pb-5">
-            <div className="flex w-full items-center">NAVBAR</div>
-
-            <div className="flex flex-grow basis-0">
-              <div className="flex flex-grow basis-0 flex-col gap-2">
-                <div>HELLO</div>
-
-                <div className="flex-grow basis-0 overflow-auto bg-blue-500">
-                  Item 1 asdfasdfasdf asdf sadfa sdfasdf Lorem ipsum dolor sit
-                  amet consectetur adipisicing elit. Delectus dignissimos
-                  incidunt quibusdam blanditiis eos. Vitae dignissimos deserunt
-                  dicta illo voluptates ut neque, maxime exercitationem facere
-                  mollitia autem molestiae iure quam dolorum ipsam quasi
-                  suscipit optio deleniti, obcaecati eveniet sed. Tenetur
-                  laborum obcaecati distinctio ducimus ad dolor sit laboriosam
-                  ut totam et veniam quibusdam molestiae voluptate corrupti quos
-                  nihil nam repellendus temporibus pariatur, in dignissimos
-                  necessitatibus quam nisi? Debitis velit, veritatis voluptate
-                  dignissimos aliquid excepturi officia totam distinctio
-                  placeat! Architecto rem dicta repellendus distinctio accusamus
-                  consectetur sint voluptas saepe doloribus. Veritatis
-                  laboriosam, illum deleniti soluta molestiae voluptas
-                  doloremque non nam quas quidem corrupti fuga ad ipsa incidunt?
-                  Labore qui ad omnis aspernatur temporibus dolor recusandae
-                  molestias ducimus voluptatibus quam dolorum reprehenderit,
-                  autem est unde, beatae commodi fugit earum sed! At distinctio
-                  deleniti officiis quos, incidunt ab aliquam harum, voluptates
-                  ratione illum non error dignissimos minus magni expedita
-                  reprehenderit tenetur ducimus culpa et itaque veniam
-                  consectetur sunt vel iste. Quasi sunt consequuntur earum ut
-                  nam error rem eum voluptas labore dolor eligendi minus cum
-                  similique officia sint sapiente illo, ipsa dignissimos
-                  voluptate voluptates numquam. Rem beatae dolor quae explicabo
-                  unde eum tempore rerum sint animi ab numquam, necessitatibus
-                  autem. Veniam, obcaecati cumque? Item 1 asdfasdfasdf asdf
-                  sadfa sdfasdf Lorem ipsum dolor sit amet consectetur
-                  adipisicing elit. Delectus dignissimos incidunt quibusdam
-                  blanditiis eos. Vitae dignissimos deserunt dicta illo
-                  voluptates ut neque, maxime exercitationem facere mollitia
-                  autem molestiae iure quam dolorum ipsam quasi suscipit optio
-                  deleniti, obcaecati eveniet sed. Tenetur laborum obcaecati
-                  distinctio ducimus ad dolor sit laboriosam ut totam et veniam
-                  quibusdam molestiae voluptate corrupti quos nihil nam
-                  repellendus temporibus pariatur, in dignissimos necessitatibus
-                  quam nisi? Debitis velit, veritatis voluptate dignissimos
-                  aliquid excepturi officia totam distinctio placeat! Architecto
-                  rem dicta repellendus distinctio accusamus consectetur sint
-                  voluptas saepe doloribus. Veritatis laboriosam, illum deleniti
-                  soluta molestiae voluptas doloremque non nam quas quidem
-                  corrupti fuga ad ipsa incidunt? Labore qui ad omnis aspernatur
-                  temporibus dolor recusandae molestias ducimus voluptatibus
-                  quam dolorum reprehenderit, autem est unde, beatae commodi
-                  fugit earum sed! At distinctio deleniti officiis quos,
-                  incidunt ab aliquam harum, voluptates ratione illum non error
-                  dignissimos minus magni expedita reprehenderit tenetur ducimus
-                  culpa et itaque veniam consectetur sunt vel iste. Quasi sunt
-                  consequuntur earum ut nam error rem eum voluptas labore dolor
-                  eligendi minus cum similique officia sint sapiente illo, ipsa
-                  dignissimos voluptate voluptates numquam. Rem beatae dolor
-                  quae explicabo unde eum tempore rerum sint animi ab numquam,
-                  necessitatibus autem. Veniam, obcaecati cumque? Item 1
-                  asdfasdfasdf asdf sadfa sdfasdf Lorem ipsum dolor sit amet
-                  consectetur adipisicing elit. Delectus dignissimos incidunt
-                  quibusdam blanditiis eos. Vitae dignissimos deserunt dicta
-                  illo voluptates ut neque, maxime exercitationem facere
-                  mollitia autem molestiae iure quam dolorum ipsam quasi
-                  suscipit optio deleniti, obcaecati eveniet sed. Tenetur
-                  laborum obcaecati distinctio ducimus ad dolor sit laboriosam
-                  ut totam et veniam quibusdam molestiae voluptate corrupti quos
-                  nihil nam repellendus temporibus pariatur, in dignissimos
-                  necessitatibus quam nisi? Debitis velit, veritatis voluptate
-                  dignissimos aliquid excepturi officia totam distinctio
-                  placeat! Architecto rem dicta repellendus distinctio accusamus
-                  consectetur sint voluptas saepe doloribus. Veritatis
-                  laboriosam, illum deleniti soluta molestiae voluptas
-                  doloremque non nam quas quidem corrupti fuga ad ipsa incidunt?
-                  Labore qui ad omnis aspernatur temporibus dolor recusandae
-                  molestias ducimus voluptatibus quam dolorum reprehenderit,
-                  autem est unde, beatae commodi fugit earum sed! At distinctio
-                  deleniti officiis quos, incidunt ab aliquam harum, voluptates
-                  ratione illum non error dignissimos minus magni expedita
-                  reprehenderit tenetur ducimus culpa et itaque veniam
-                  consectetur sunt vel iste. Quasi sunt consequuntur earum ut
-                  nam error rem eum voluptas labore dolor eligendi minus cum
-                  similique officia sint sapiente illo, ipsa dignissimos
-                  voluptate voluptates numquam. Rem beatae dolor quae explicabo
-                  unde eum tempore rerum sint animi ab numquam, necessitatibus
-                  autem. Veniam, obcaecati cumque?
-                </div>
-              </div>
-
-              <div className="flex-grow bg-orange-500">Item 2</div>
-              <div className="flex-grow bg-green-500">Item 3</div>
+    <ClerkProvider>
+      <html lang="en">
+        <body className={inter.className}>
+          <SignedOut>
+            <div className="flex h-screen w-screen items-center justify-center">
+              <SignIn routing="hash" />
             </div>
-          </div> */}
+          </SignedOut>
 
-          <div className="flex max-h-screen min-h-screen flex-col gap-10 px-10 py-5 pb-5">
-            <Navbar />
-            <div className="flex flex-grow basis-0">{children}</div>
-          </div>
-        </Providers>
-      </body>
-    </html>
+          <SignedIn>
+            <Providers>
+              <div className="flex max-h-screen min-h-screen flex-col gap-10 px-10 py-5 pb-5">
+                 {/* FIX NAVBAR LAYOUT */}
+                  {/* 
+                    <UserButton showName />
+                    <Providers>{children}</Providers>
+                  */}
+                <Navbar />
+                <div className="flex flex-grow basis-0">{children}</div>
+              </div>
+            </Providers>
+          </SignedIn>
+          
+          <Toaster richColors />
+        </body>
+      </html>
+    </ClerkProvider>
   )
 }
