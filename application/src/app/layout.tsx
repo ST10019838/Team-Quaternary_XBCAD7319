@@ -5,6 +5,17 @@ import Providers from './providers'
 import Navbar from '@/components/ui/navbar'
 import { Toaster } from 'sonner'
 
+import {
+  ClerkProvider,
+  SignIn,
+  SignInButton,
+  SignedIn,
+  SignedOut,
+  UserButton,
+} from '@clerk/nextjs'
+import { clerkClient } from '@/lib/clerk-client'
+import { Button } from '@/components/shadcn-ui/button'
+
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
@@ -18,17 +29,32 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en">
-      <body className={inter.className}>
-        <Providers>
-          <div className="flex max-h-screen min-h-screen flex-col gap-10 px-10 py-5">
-            <Navbar />
-            {children}
-          </div>
-        </Providers>
+    <ClerkProvider>
+      <html lang="en">
+        <body className={inter.className}>
+          <SignedOut>
+            <div className="flex h-screen w-screen items-center justify-center">
+              <SignIn routing="hash" />
+            </div>
+          </SignedOut>
 
-        <Toaster richColors />
-      </body>
-    </html>
+          <SignedIn>
+            <Providers>
+              <div className="flex max-h-screen min-h-screen flex-col gap-10 px-10 py-5">
+                 {/* FIX NAVBAR LAYOUT */}
+                  {/* 
+                    <UserButton showName />
+                    <Providers>{children}</Providers>
+                  */}
+                <Navbar />
+                {children}
+              </div>
+            </Providers>
+          </SignedIn>
+          
+          <Toaster richColors />
+        </body>
+      </html>
+    </ClerkProvider>
   )
 }
