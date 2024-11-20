@@ -8,7 +8,6 @@ on:
     branches:
       - main
 
-#_______________________________SETUP_______________________________________________#
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -18,17 +17,13 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Step 2: Set working directory
-      - name: Set working directory
-        run: cd application
-
-      # Step 3: Set up Node.js
+      # Step 2: Set up Node.js
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '20'
 
-      # Step 4: Cache node modules
+      # Step 3: Cache node modules
       - name: Cache node modules
         uses: actions/cache@v3
         with:
@@ -37,47 +32,27 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
 
-      # Step 5: Install dependencies
+      # Step 4: Install dependencies
       - name: Install dependencies
         run: npm install
         working-directory: application
 
-#_______________________________TEST________________________________________________#
-      # Step 6: Run tests (uncomment if you have tests set up)
+      # Step 5: Run tests
       #- name: Run tests
-        #run: npm run test
+        #run: npm test
         #working-directory: application
 
-#_______________________________SECURITY SCAN SETUP________________________________#
-      # Step 7: Install vulnerability checkers (for Next.js, we use tools like 'npm audit' or 'yarn audit')
+      # Step 6: Run vulnerability scan (npm audit)
       - name: Run vulnerability scan (npm audit)
         run: npm audit --production
         working-directory: application
 
-      # Optional: HCL AppScan CodeSweep for static code analysis
-      - name: HCL AppScan CodeSweep
-        uses: HCL-TECH-SOFTWARE/appscan-codesweep-action@v2.1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Pass the GITHUB_TOKEN as an environment variable
-        with:
-          acceptssl: false
-          status: neutral
-          publish_on_merge: false
-          issue_status: Open
-          scan_base_name: GitHub_CodeSweep
-          personal_scan: false
-          asoc_key: ${{ secrets.ASOC_KEY }}  # Replace with your actual secret
-          asoc_secret: ${{ secrets.ASOC_SECRET }}  # Replace with your actual secret
-          service_url: ${{ secrets.SERVICE_URL }}  # Replace with your actual URL if required
-
-#_______________________________BUILD________________________________________________#
-      # Step 8: Build the project
+      # Step 7: Build the project
       - name: Build project
         run: npm run build
         working-directory: application
 
-#_______________________________UPLOAD______________________________________________#
-      # Step 9: Upload build artifacts (Next.js output)
+      # Step 8: Upload build artifacts (Next.js output)
       - name: Upload build artifacts
         if: success()
         uses: actions/upload-artifact@v3
