@@ -37,22 +37,27 @@ jobs:
         run: npm install
         working-directory: application
 
-      # Step 5: Run tests
+      # Step 5: Run linter (ESLint)
+      - name: Run linter
+        run: npm run lint
+        working-directory: application
+
+      # Step 6: Run tests requires that jest be installed in package.json local testing
       #- name: Run tests
         #run: npm test
         #working-directory: application
 
-      # Step 6: Run vulnerability scan (npm audit)
+      # Step 7: Run vulnerability scan (npm audit)
       - name: Run vulnerability scan (npm audit)
         run: npm audit --production
         working-directory: application
 
-      # Step 7: Build the project
+      # Step 8: Build the project
       - name: Build project
         run: npm run build
         working-directory: application
 
-      # Step 8: Upload build artifacts (Next.js output)
+      # Step 9: Upload build artifacts (Next.js output)
       - name: Upload build artifacts
         if: success()
         uses: actions/upload-artifact@v3
