@@ -53,6 +53,7 @@ jobs:
 
       - name: Setup Tools Directory and Manifest
         run: |
+        
           echo "Starting setup..."
           mkdir -p ./tools
           cd ./tools
@@ -62,27 +63,34 @@ jobs:
           echo "Clearing previous configurations..."
           rm -rf .config
       
-          # Create the tool manifest in the current directory explicitly
+          # Create the tool manifest
           echo "Creating tool manifest..."
-          dotnet new tool-manifest --force --output . || { echo 'Failed to create tool manifest.' ; exit 1; }
+          dotnet new tool-manifest --force || { echo 'Failed to create tool manifest.' ; exit 1; }
           echo "Manifest created successfully."
       
           # Debugging: Check contents of tools directory
           echo "Contents of tools directory after creating manifest:"
           ls -la
       
-          # Verify manifest creation with full path
+          # Move manifest file if it exists in .config directory
+          if [ -f .config/dotnet-tools.json ]; then
+            echo "Manifest file found in .config. Moving to current directory..."
+            mv .config/dotnet-tools.json ./dotnet-tools.json || { echo 'Failed to move manifest file.' ; exit 1; }
+          fi
+      
+          # Verify manifest creation in the correct location
           MANIFEST_PATH=$(pwd)/dotnet-tools.json
           if [ -f "$MANIFEST_PATH" ]; then
             echo "Manifest file exists at $MANIFEST_PATH."
           else
-            echo "Manifest file not found in the expected location. Exiting..."
+            echo "Manifest file not found after moving. Exiting..."
             exit 1
           fi
           cd ..
           shell: /usr/bin/bash -e {0}
           env:
           DOTNET_ROOT: /usr/share/dotnet
+
 
       - name: Install Security Code Scan as Project Tool
         run: dotnet tool install SecurityCodeScan --tool-manifest ./tools/dotnet-tools.json --version 3.5.4
