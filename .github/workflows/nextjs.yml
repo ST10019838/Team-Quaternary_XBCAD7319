@@ -1,4 +1,4 @@
-name: CI for Next.js App
+name: Team_Quaternary_CI_Main
 
 on:
   push:
@@ -40,7 +40,7 @@ jobs:
 #_______________________________SETUP_______________________________________________#
 #_______________________________TEST________________________________________________#
 
-      #-  name: Run tests
+      #- name: Run tests
         # run: npm run test
         # working-directory: application
 
@@ -90,7 +90,6 @@ jobs:
           env:
           DOTNET_ROOT: /usr/share/dotnet
 
-
       - name: Install Security Code Scan as Project Tool
         run: dotnet tool install SecurityCodeScan --tool-manifest ./tools/dotnet-tools.json --version 3.5.4
 
@@ -105,6 +104,9 @@ jobs:
 
       #- name: SonarQube Scan
         #uses: kitabisa/sonarqube-action@v1.2.1
+
+      - name: HCL AppScan CodeSweep
+        uses: HCL-TECH-SOFTWARE/appscan-codesweep-action@v2.1
 
 #_______________________________TEST________________________________________________#
 #______________________________BUILD________________________________________________#
