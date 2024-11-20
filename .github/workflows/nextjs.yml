@@ -87,10 +87,9 @@ jobs:
             exit 1
           fi
           cd ..
-          shell: /usr/bin/bash -e {0}
+          shell: /usr/bin/bash -e
           env:
           DOTNET_ROOT: /usr/share/dotnet
-
 
       - name: Install Security Code Scan as Project Tool
         run: dotnet tool install SecurityCodeScan --tool-manifest ./tools/dotnet-tools.json --version 3.5.4
