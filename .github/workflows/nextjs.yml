@@ -52,6 +52,9 @@ jobs:
           dotnet-version: '6.0' # Use the required .NET version
 
       - name: Setup Tools Directory and Manifest
+        shell: bash
+        env:
+          DOTNET_ROOT: /usr/share/dotnet
         run: |
           echo "Starting setup..."
           mkdir -p ./tools
@@ -86,9 +89,7 @@ jobs:
             exit 1
           fi
           cd ..
-          shell: bash
-          env:
-          DOTNET_ROOT: /usr/share/dotnet
+
 
       - name: Install Security Code Scan as Project Tool
         run: dotnet tool install SecurityCodeScan --tool-manifest ./tools/dotnet-tools.json --version 3.5.4
