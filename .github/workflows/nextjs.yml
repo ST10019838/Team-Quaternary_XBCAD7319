@@ -58,7 +58,15 @@ jobs:
       - name: HCL AppScan CodeSweep
         uses: HCL-TECH-SOFTWARE/appscan-codesweep-action@v2.1
         with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          acceptssl: false
+          status: neutral
+          publish_on_merge: false
+          issue_status: Open
+          scan_base_name: GitHub_CodeSweep
+          personal_scan: false
+          asoc_key: ${{ secrets.ASOC_KEY }}  # Replace with your actual secret
+          asoc_secret: ${{ secrets.ASOC_SECRET }}  # Replace with your actual secret
+          service_url: ${{ secrets.SERVICE_URL }}  # Replace with your actual URL if required
 
 #_______________________________BUILD________________________________________________#
       # Step 8: Build the project
