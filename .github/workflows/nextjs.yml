@@ -14,17 +14,21 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Step 1: Checkout code
       - name: Checkout code
         uses: actions/checkout@v3
 
+      # Step 2: Set working directory
       - name: Set working directory
         run: cd application
 
+      # Step 3: Set up Node.js
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '20'
 
+      # Step 4: Cache node modules
       - name: Cache node modules
         uses: actions/cache@v3
         with:
@@ -33,102 +37,38 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
 
+      # Step 5: Install dependencies
       - name: Install dependencies
         run: npm install
         working-directory: application
 
-#_______________________________SETUP_______________________________________________#
 #_______________________________TEST________________________________________________#
+      # Step 6: Run tests (uncomment if you have tests set up)
+      - name: Run tests
+        run: npm run test
+        working-directory: application
 
-      #- name: Run tests
-        # run: npm run test
-        # working-directory: application
+#_______________________________SECURITY SCAN SETUP________________________________#
+      # Step 7: Install vulnerability checkers (for Next.js, we use tools like 'npm audit' or 'yarn audit')
+      - name: Run vulnerability scan (npm audit)
+        run: npm audit --production
+        working-directory: application
 
-#_______________________________SECURITY SCAN SETUP_______________________________________________#
-
-      - name: Install .NET
-        uses: actions/setup-dotnet@v3
-        with:
-          dotnet-version: '6.0' # Use the required .NET version
-
-      - name: Setup Tools Directory and Manifest
-        shell: bash
-        env:
-          DOTNET_ROOT: /usr/share/dotnet
-        run: |
-          echo "Starting setup..."
-          mkdir -p ./tools
-          cd ./tools
-          pwd  # Confirm current directory
-      
-          # Cleanup any pre-existing configuration
-          echo "Clearing previous configurations..."
-          rm -rf .config
-      
-          # Create the tool manifest
-          echo "Creating tool manifest..."
-          dotnet new tool-manifest --force || { echo 'Failed to create tool manifest.' ; exit 1; }
-          echo "Manifest created successfully."
-      
-          # Debugging: Check contents of tools directory
-          echo "Contents of tools directory after creating manifest:"
-          ls -la
-      
-          # Move manifest file if it exists in .config directory
-          if [ -f .config/dotnet-tools.json ]; then
-            echo "Manifest file found in .config. Moving to current directory..."
-            mv .config/dotnet-tools.json ./dotnet-tools.json || { echo 'Failed to move manifest file.' ; exit 1; }
-          fi
-      
-          # Verify manifest creation in the correct location
-          MANIFEST_PATH=$(pwd)/dotnet-tools.json
-          if [ -f "$MANIFEST_PATH" ]; then
-            echo "Manifest file exists at $MANIFEST_PATH."
-          else
-            echo "Manifest file not found after moving. Exiting..."
-            exit 1
-          fi
-          cd ..
-          
-      #- name: Add NuGet source
-        #run: |
-          #dotnet nuget add source https://api.nuget.org/v3/index.json --name nuget.org
-
-      #- name: Clear NuGet cache
-        #run: |
-          #dotnet nuget locals all --clear
-
-      #- name: Install Security Code Scan as Project Tool
-        #run: dotnet tool install SecurityCodeScan --tool-manifest ./tools/dotnet-tools.json --version 3.5.4
-
-      #- name: Install SecurityCodeScan Tool
-        #run: |
-          #dotnet tool install SecurityCodeScan --tool-manifest ./tools/dotnet-tools.json --version 3.5.4 --verbosity detailed
-    
-      - name: Upload SARIF Report
-        uses: github/codeql-action/upload-sarif@v3
-        with:
-          sarif_file: application/security-reports/security-code-scan.sarif
-
-      #- name: SonarQube Scan
-        #uses: kitabisa/sonarqube-action@v1.2.1
-
+      # Optional: HCL AppScan CodeSweep for static code analysis
       - name: HCL AppScan CodeSweep
         uses: HCL-TECH-SOFTWARE/appscan-codesweep-action@v2.1
 
-#_______________________________TEST________________________________________________#
-#______________________________BUILD________________________________________________#
-
+#_______________________________BUILD________________________________________________#
+      # Step 8: Build the project
       - name: Build project
         run: npm run build
         working-directory: application
 
-#______________________________BUILD________________________________________________#
-#______________________________UPLOAD_______________________________________________#
+#_______________________________UPLOAD______________________________________________#
+      # Step 9: Upload build artifacts (Next.js output)
       - name: Upload build artifacts
         if: success()
         uses: actions/upload-artifact@v3
         with:
           name: nextjs-build
           path: application/.next
-#______________________________UPLOAD_______________________________________________#
