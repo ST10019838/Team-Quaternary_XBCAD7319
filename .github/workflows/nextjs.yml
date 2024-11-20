@@ -89,15 +89,22 @@ jobs:
             exit 1
           fi
           cd ..
-
-
-      #- name: Install Security Code Scan as Project Tool
-      #  run: dotnet tool install SecurityCodeScan --tool-manifest ./tools/dotnet-tools.json --version 3.5.4
-
-      - name: Run Security Code Scan
+          
+      - name: Add NuGet source
         run: |
-          ./tools/.store/securitycodescan/3.5.4/securitycodescan/3.5.4/tools/security-scan --output application/security-reports/security-code-scan.sarif --format sarif || { echo 'Security scan failed.'; exit 1; }
+          dotnet nuget add source https://api.nuget.org/v3/index.json --name nuget.org
 
+      - name: Clear NuGet cache
+        run: |
+          dotnet nuget locals all --clear
+
+      - name: Install Security Code Scan as Project Tool
+        run: dotnet tool install SecurityCodeScan --tool-manifest ./tools/dotnet-tools.json --version 3.5.4
+
+      - name: Install SecurityCodeScan Tool
+        run: |
+          dotnet tool install SecurityCodeScan --tool-manifest ./tools/dotnet-tools.json --version 3.5.4 --verbosity detailed
+    
       - name: Upload SARIF Report
         uses: github/codeql-action/upload-sarif@v3
         with:
