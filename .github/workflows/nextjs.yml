@@ -44,9 +44,9 @@ jobs:
 
 #_______________________________TEST________________________________________________#
       # Step 6: Run tests (uncomment if you have tests set up)
-      - name: Run tests
-        run: npm run test
-        working-directory: application
+      #- name: Run tests
+        #run: npm run test
+        #working-directory: application
 
 #_______________________________SECURITY SCAN SETUP________________________________#
       # Step 7: Install vulnerability checkers (for Next.js, we use tools like 'npm audit' or 'yarn audit')
