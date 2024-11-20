@@ -57,25 +57,32 @@ jobs:
           mkdir -p ./tools
           cd ./tools
           pwd  # Confirm current directory
+
+          # Cleanup any pre-existing configuration
+          echo "Clearing previous configurations..."
+          rm -rf .config
+
+          # Create the tool manifest
           echo "Creating tool manifest..."
-          # Use absolute path for clarity
-          MANIFEST_PATH=$(pwd)/dotnet-tools.json
           dotnet new tool-manifest --force || { echo 'Failed to create tool manifest.' ; exit 1; }
           echo "Manifest created successfully."
-          # List contents of the tools directory for debugging
+
+          # Debugging: Check contents of tools directory
           echo "Contents of tools directory after creating manifest:"
-          ls -la  # List all files to check for dotnet-tools.json
-          # Explicitly check the current working directory
-          echo "Current directory after manifest creation:"
-          pwd
-          # Check if the manifest file is really there
+          ls -la
+
+          # Verify manifest creation with full path
+          MANIFEST_PATH=$(pwd)/dotnet-tools.json
           if [ -f "$MANIFEST_PATH" ]; then
             echo "Manifest file exists at $MANIFEST_PATH."
           else
-            echo "Manifest file not found at $MANIFEST_PATH. Exiting..."
+            echo "Manifest file not found! Searching directory tree..."
+            find . -name "dotnet-tools.json"
+            echo "If not found above, exiting..."
             exit 1
           fi
-          working-directory: application
+          cd ..
+
 
       - name: Install Security Code Scan as Project Tool
         run: dotnet tool install SecurityCodeScan --tool-manifest ./tools/dotnet-tools.json --version 3.5.4
