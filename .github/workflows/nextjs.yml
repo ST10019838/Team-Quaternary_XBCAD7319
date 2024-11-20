@@ -57,6 +57,8 @@ jobs:
       # Optional: HCL AppScan CodeSweep for static code analysis
       - name: HCL AppScan CodeSweep
         uses: HCL-TECH-SOFTWARE/appscan-codesweep-action@v2.1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Pass the GITHUB_TOKEN as an environment variable
         with:
           acceptssl: false
           status: neutral
