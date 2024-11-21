@@ -37,41 +37,30 @@ jobs:
         run: npm install
         working-directory: application
 
-      # Step 5: Run linter (ESLint) requires fixing syntax in application
-      # - name: Run linter
-      #   run: npm run lint
-      #   working-directory: application
-
-      # Step 6: Run tests requires that jest be installed in package.json local testing
-      # - name: Run tests
-      #   run: npm test
-      #   working-directory: application
-
-      # Step 7: Run vulnerability scan (npm audit)
+      # Step 5: Run vulnerability scan (npm audit)
       - name: Run vulnerability scan (npm audit)
         run: npm audit --production
         working-directory: application
 
-      # Step 8: Authenticate Snyk CLI
+      # Step 6: Authenticate Snyk CLI
       - name: Authenticate Snyk CLI
         run: snyk auth ${{ secrets.SNYK_TOKEN }}
 
-      # Step 9: Run Snyk vulnerability scan
+      # Step 7: Run Snyk vulnerability scan
       - name: Run Snyk vulnerability scan
-        uses: snyk/actions@v2
+        uses: snyk/actions@v2.0.0  # Use specific version
         with:
           args: test
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
-      # Step 10: Build the project fails due to page.tsx
+      # Step 8: Build the project
       # - name: Build project
       #   run: npm run build
       #   working-directory: application
 
-      # Step 11: Upload build artifacts (Next.js output)
+      # Step 9: Upload build artifacts
       # - name: Upload build artifacts
-      #   if: success()
       #   uses: actions/upload-artifact@v3
       #   with:
       #     name: nextjs-build
