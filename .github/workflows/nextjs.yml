@@ -48,7 +48,7 @@ jobs:
 
       # Step 7: Run Snyk vulnerability scan
       - name: Run Snyk vulnerability scan
-        uses: snyk/actions@v1  # Use the latest stable v1 version
+        uses: snyk/actions@v0.4.0  # Use the latest stable v1 version
         with:
           args: test
         env:
