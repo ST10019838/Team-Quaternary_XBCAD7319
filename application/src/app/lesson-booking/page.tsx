@@ -7,6 +7,7 @@ import LessonBookingCard from '@/components/ui/lesson-booking-card'
 import { Lesson } from '@/models/Lesson'
 import LessonInformationCard from '@/components/ui/lesson-information-card'
 import LessonSelectionCard from '@/components/ui/lesson-selection-card'
+import useUsers from '@/hooks/useUsers'
 
 const exampleLesson: Lesson = {
   id: 1,
@@ -17,14 +18,38 @@ const exampleLesson: Lesson = {
   startTime: new Date(),
   endTime: new Date(),
   // Fix contact number
-  contactNumber: '1234567890',
-  contactEmail: 'coach.nick@example.com',
-  address: '123 Tennis Court Lane, Sportsville, SP 12345',
+  contactDetailsId: 9,
+  contactDetails: {
+    id: 9,
+    name: 'Person',
+    phone: '1234567890',
+    email: 'coach.nick@example.com',
+  },
+
+  addressId: 3,
+  address: {
+    id: 3,
+    address: '123 Tennis Court Lane, Sportsville, SP 12345',
+  },
   paymentAmount: 75.0,
-  level: 'Intermediate',
+  skillLevel: 'Intermediate',
+
+  paymentDetailsId: 1,
+  paymentDetails: {
+    id: 1,
+    // paymentDetails: string
+    name: 'Damian Dare',
+    bank: 'Capitec',
+    branch: 'IDK BRO',
+    branchCode: 1232,
+    accountNumber: 123212,
+  },
 }
 
 export default function page() {
+  const [selectedLesson, setSelectedLesson] = useState<Lesson | undefined>()
+  const { useCoach } = useUsers()
+
   return (
     <div
       /* className="flex h-full grow gap-5 bg-blue-500 "*/ className="flex flex-grow basis-0 justify-center gap-5"
@@ -109,7 +134,10 @@ export default function page() {
 
       <div className="flex max-w-max flex-grow basis-0 flex-col items-center justify-center gap-2">
         <div className="flex-grow basis-0 overflow-auto">
-          <LessonSelectionCard />
+          <LessonSelectionCard
+            selectedLesson={selectedLesson}
+            setSelectedLesson={setSelectedLesson}
+          />
         </div>
       </div>
 
@@ -117,13 +145,13 @@ export default function page() {
 
       <div className="flex max-w-max flex-grow basis-0 flex-col gap-2">
         <div className="flex-grow basis-0 overflow-auto">
-          <LessonInformationCard lesson={exampleLesson} />
+          <LessonInformationCard lesson={selectedLesson} />
         </div>
       </div>
 
       <div className="flex max-w-max flex-grow basis-0 flex-col gap-2">
         <div className="flex-grow basis-0 overflow-auto">
-          <LessonBookingCard lesson={exampleLesson} />
+          <LessonBookingCard lesson={selectedLesson} />
         </div>
       </div>
 

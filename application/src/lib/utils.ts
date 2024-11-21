@@ -9,3 +9,7 @@ export function cn(...inputs: ClassValue[]) {
 export function formatDate(date: string) {
   return format(date, 'dd MMMM yyyy')
 }
+
+export function formatTime(date: Date) {
+  return format(date, 'hh:mm:ss a')
+}

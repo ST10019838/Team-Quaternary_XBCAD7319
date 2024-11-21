@@ -5,14 +5,7 @@ import Providers from './providers'
 import Navbar from '@/components/ui/navbar'
 import { Toaster } from 'sonner'
 
-import {
-  ClerkProvider,
-  SignIn,
-  SignInButton,
-  SignedIn,
-  SignedOut,
-  UserButton,
-} from '@clerk/nextjs'
+import { ClerkProvider, SignIn, SignedIn, SignedOut } from '@clerk/nextjs'
 import { clerkClient } from '@/lib/clerk-client'
 import { Button } from '@/components/shadcn-ui/button'
 
@@ -29,9 +22,9 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <ClerkProvider>
-      <html lang="en">
-        <body className={inter.className}>
+    <html lang="en">
+      <body className={inter.className}>
+        <ClerkProvider>
           <SignedOut>
             <div className="flex h-screen w-screen items-center justify-center">
               <SignIn routing="hash" />
@@ -41,8 +34,8 @@ export default function RootLayout({
           <SignedIn>
             <Providers>
               <div className="flex max-h-screen min-h-screen flex-col gap-10 px-10 py-5 pb-5">
-                 {/* FIX NAVBAR LAYOUT */}
-                  {/* 
+                {/* FIX NAVBAR LAYOUT */}
+                {/* 
                     <UserButton showName />
                     <Providers>{children}</Providers>
                   */}
@@ -51,10 +44,10 @@ export default function RootLayout({
               </div>
             </Providers>
           </SignedIn>
-          
+
           <Toaster richColors />
-        </body>
-      </html>
-    </ClerkProvider>
+        </ClerkProvider>
+      </body>
+    </html>
   )
 }

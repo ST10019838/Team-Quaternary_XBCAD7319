@@ -100,7 +100,7 @@ export default function ContactDetailsTable() {
             <DeletionDialog
               nameOfData="contact details"
               dataId={row.original.id}
-              dataToDelete={row.original}
+              dataIdToDelete={row.original.id}
               dialogTrigger={<p></p>}
               isOpen={deletionDialogIsOpen}
               onOpenChanged={setDeletionDialogIsOpen}

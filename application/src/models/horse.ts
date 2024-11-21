@@ -1,5 +1,5 @@
 import { SkillLevel } from './skill-level'
-import { User } from './user'
+import { User } from './user-params'
 
 export interface Horse {
   id: string

@@ -9,6 +9,7 @@ import { Button } from '@/components/shadcn-ui/button'
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -33,18 +34,25 @@ import {
   DrawerTitle,
   DrawerDescription,
 } from '@/components/shadcn-ui/drawer'
-import { User } from '@/models/user'
 import { CirclePlus, Loader2, Pencil } from 'lucide-react'
 import { ReactNode } from 'react'
 import { UseMutationResult } from '@tanstack/react-query'
 import { PaymentDetails } from '@/models/payment-details'
-import { Textarea } from '../shadcn-ui/textarea'
 
 const paymentDetailsSchema = z.object({
-  paymentDetails: z
-    .string()
-    .min(10, { message: 'Payment details must be at least 10 characters long' })
-    .max(500, { message: 'Payment details must not exceed 500 characters' }),
+  name: z.string().min(2, 'Name must be at least 2 characters long'),
+  bank: z.string().min(1, 'Bank name is required'),
+  branch: z.string().min(1, 'Branch name is required'),
+  branchCode: z
+    .number()
+    .int()
+    .positive('Branch code must be a positive integer')
+    .max(99999999, "Branch code can't be more than 8 digits long"),
+  accountNumber: z
+    .number()
+    .int()
+    .positive('Account number must be a positive integer')
+    .max(99999999999999999, "Account number can't be more than 17 digits long"),
 })
 
 interface Props {
@@ -68,8 +76,20 @@ export default function PaymentDetailsFormDrawer({
     resolver: zodResolver(paymentDetailsSchema),
     defaultValues:
       mode === 'update' && paymentDetailsToUpdate
-        ? { paymentDetails: paymentDetailsToUpdate?.paymentDetails }
-        : { paymentDetails: '' },
+        ? {
+            name: paymentDetailsToUpdate?.name,
+            bank: paymentDetailsToUpdate?.bank,
+            branch: paymentDetailsToUpdate?.branch,
+            branchCode: paymentDetailsToUpdate?.branchCode,
+            accountNumber: paymentDetailsToUpdate?.accountNumber,
+          }
+        : {
+            name: '',
+            bank: '',
+            branch: '',
+            branchCode: 0,
+            accountNumber: 0,
+          },
   })
 
   const onSubmit = (data: PaymentDetails) => {
@@ -123,18 +143,90 @@ export default function PaymentDetailsFormDrawer({
             <form className="space-y-5">
               <FormField
                 control={form.control}
-                name="paymentDetails"
+                name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Payment Details</FormLabel>
+                    <FormLabel>Name</FormLabel>
                     <FormControl>
-                      <Textarea
+                      <Input {...field} />
+                    </FormControl>
+                    <FormDescription>
+                      The name associated with this payment detail.
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="bank"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Bank</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormDescription>The name of the bank.</FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="branch"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Branch</FormLabel>
+                    <FormControl>
+                      <Input {...field} />
+                    </FormControl>
+                    <FormDescription>
+                      The name of the bank branch.
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="branchCode"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Branch Code</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
                         {...field}
-                        placeholder="Enter your payment details here..."
-                        className="resize-none"
-                        rows={5}
+                        onChange={(e) =>
+                          field.onChange(parseInt(e.target.value))
+                        }
                       />
                     </FormControl>
+                    <FormDescription>
+                      The code for this bank branch.
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="accountNumber"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Account Number</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        {...field}
+                        onChange={(e) =>
+                          field.onChange(parseInt(e.target.value))
+                        }
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      The account number for this payment detail.
+                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}

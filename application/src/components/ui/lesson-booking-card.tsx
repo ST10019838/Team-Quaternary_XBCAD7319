@@ -3,12 +3,14 @@ import {
   ChartNoAxesColumnIncreasing,
   CircleGauge,
   Clock,
+  CloudUpload,
   Columns2,
   Columns3,
   DollarSign,
   Gauge,
   Mail,
   MapPin,
+  Paperclip,
   Phone,
   RectangleVertical,
 } from 'lucide-react'
@@ -51,6 +53,12 @@ import { z } from 'zod'
 import { Input } from '../shadcn-ui/input'
 import { ScrollArea } from '../shadcn-ui/scroll-area'
 import { supabase } from '@/lib/supabase-client'
+import {
+  FileInput,
+  FileUploader,
+  FileUploaderContent,
+  FileUploaderItem,
+} from '../shadcn-ui-extensions/file-upload'
 
 // The following component was adapted from a v0 generation
 // Link: https://v0.dev/
@@ -69,19 +77,26 @@ const lessonBookingSchema = z.object({
   // Author: Prodipta Banerjee (https://dev.to/banerjeeprodipta)
   // Link: https://dev.to/banerjeeprodipta/validate-file-with-zod-20o
   proofOfPayment: z
-    .instanceof(File)
-    // .refine((file: File) => file?.length !== 0, "File is required")
-    .refine((file) => file.size <= MAX_FILE_SIZE, `Max file size is 5MB.`)
-    .refine(
-      (file) =>
-        ['image/jpeg', 'image/png', 'application/pdf'].includes(file.type),
-      'Only .jpg, .png, and .pdf files are accepted.'
+    // .instanceof(File)
+    .array(
+      // This approach is used for the file drop and was adapted from Shadcn Extension.com
+      // Author: Shadcn Extension
+      // Link: https://shadcn-extension.vercel.app/docs/file-upload#accessibility
+      z
+        .instanceof(File)
+        .refine((file) => file.size <= MAX_FILE_SIZE, `Max file size is 5MB.`)
+        .refine(
+          (file) =>
+            ['image/jpeg', 'image/png', 'application/pdf'].includes(file.type),
+          'Only .jpg, .png, and .pdf files are accepted.'
+        )
     ),
+  // .refine((file: File) => file?.length !== 0, "File is required")
 })
 
 type LessonBookingFormData = z.infer<typeof lessonBookingSchema>
 
-export default function LessonBookingCard({ lesson }: { lesson: Lesson }) {
+export default function LessonBookingCard({ lesson }: { lesson?: Lesson }) {
   const form = useForm<LessonBookingFormData>({
     resolver: zodResolver(lessonBookingSchema),
     defaultValues: {
@@ -92,17 +107,21 @@ export default function LessonBookingCard({ lesson }: { lesson: Lesson }) {
     },
   })
 
+  const dropZoneConfig = {
+    maxFiles: 1,
+    maxSize: 1024 * 1024 * 4, // 4MB
+    multiple: false,
+  }
+
   async function onSubmit(data: LessonBookingFormData) {
     // setIsSubmitting(true)
     try {
       // Here you would typically send the data to your API
       console.log(data)
 
-      data.proofOfPayment.name
-
       const res = await supabase.storage
         .from('proof-of-payments')
-        .upload('asldkfjkj1291023ksmi123', data.proofOfPayment, {
+        .upload('asldkfjkj1291023ksmi123', data.proofOfPayment[0], {
           upsert: true,
         })
 
@@ -198,8 +217,83 @@ export default function LessonBookingCard({ lesson }: { lesson: Lesson }) {
               )}
             />
 
+            <Separator className="mx-auto w-3/4" />
+
+            <FormField
+              control={form.control}
+              name="messageForCoach"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Message</FormLabel>
+                  <FormControl>
+                    <Textarea {...field} />
+                  </FormControl>
+                  <FormDescription>
+                    Leave an optional message (max 500 characters).
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <Separator className="mx-auto w-3/4" />
+
+            <FormField
+              control={form.control}
+              name="proofOfPayment"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>
+                    Proof Of Payment <span className="text-red-500">*</span>
+                  </FormLabel>
+                  <FormControl>
+                    <FileUploader
+                      value={field.value}
+                      // {...field}
+                      onValueChange={field.onChange}
+                      dropzoneOptions={dropZoneConfig}
+                      className="relative rounded-lg bg-background p-2"
+                    >
+                      <FileInput
+                        id="fileInput"
+                        className="outline-dashed outline-1 outline-slate-500"
+                      >
+                        <div className="flex w-full flex-col items-center justify-center p-8">
+                          <CloudUpload className="h-10 w-10 text-gray-500" />
+                          <p className="mb-1 text-sm text-gray-500 dark:text-gray-400">
+                            <span className="font-semibold">
+                              Click to upload
+                            </span>
+                            &nbsp; or drag and drop
+                          </p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400">
+                            SVG, PNG, JPG or GIF
+                          </p>
+                        </div>
+                      </FileInput>
+                      <FileUploaderContent>
+                        {field.value &&
+                          field.value.length > 0 &&
+                          field.value.map((file, i) => (
+                            <FileUploaderItem key={i} index={i}>
+                              <Paperclip className="h-4 w-4 stroke-current" />
+                              <span>{file.name}</span>
+                            </FileUploaderItem>
+                          ))}
+                      </FileUploaderContent>
+                    </FileUploader>
+                  </FormControl>
+                  <FormDescription>
+                    Upload your file here. Accepted formats: .jpg, .png, .pdf.
+                    Max size: 4MB..
+                  </FormDescription>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
             {/* Show the following for admins / coaches */}
-            {/* <FormField
+            <FormField
               control={form.control}
               name="paymentConfirmed"
               render={({ field }) => (
@@ -220,30 +314,9 @@ export default function LessonBookingCard({ lesson }: { lesson: Lesson }) {
                   </FormLabel>
                 </FormItem>
               )}
-            /> */}
-
-            <Separator className="mx-auto w-3/4" />
-
-            <FormField
-              control={form.control}
-              name="messageForCoach"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Message for Coach</FormLabel>
-                  <FormControl>
-                    <Textarea {...field} />
-                  </FormControl>
-                  <FormDescription>
-                    Leave a message for your coach (max 500 characters).
-                  </FormDescription>
-                  <FormMessage />
-                </FormItem>
-              )}
             />
 
-            <Separator className="mx-auto w-3/4" />
-
-            <FormField
+            {/* <FormField
               control={form.control}
               name="proofOfPayment"
               render={({ field: { onChange, value, ...rest } }) => (
@@ -271,7 +344,7 @@ export default function LessonBookingCard({ lesson }: { lesson: Lesson }) {
                   <FormMessage />
                 </FormItem>
               )}
-            />
+            /> */}
 
             {/* <div>
                 Lorem ipsum dolor sit, amet consectetur adipisicing elit. Fuga a

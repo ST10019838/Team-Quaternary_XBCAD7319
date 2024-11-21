@@ -11,7 +11,7 @@ import {
 } from '@/components/shadcn-ui/dropdown-menu'
 import { MoreHorizontal, Pencil, Trash2 } from 'lucide-react'
 import { useState } from 'react'
-import { User } from '@/models/user'
+// import { User } from '@/models/user'
 import useUsers from '@/hooks/useUsers'
 import { DataTableColumnHeader } from '../shadcn-ui/data-table-column-header'
 
@@ -28,51 +28,65 @@ import UserFormDrawer from './user-form-drawer'
 import DeletionDialog from './deletion-dialog'
 import { Badge } from '../shadcn-ui/badge'
 import { cn } from '@/lib/utils'
+import { useAuth, useUser } from '@clerk/nextjs'
+import { User } from '@clerk/nextjs/server'
+import { createUser } from '@/server/actions'
 
 // import { Drawer } from 'vaul'
 
 export default function UsersTable() {
   const [isTableFormOpen, setIsTableFormOpen] = useState(false)
+  // const { getToken, userId } = useAuth()
+  // const { user } = useUser()
+
   const { users, userCreation, userUpdation, userDeletion } = useUsers()
 
   const columns: ColumnDef<User>[] = [
     {
       id: 'Role',
-      accessorKey: 'userRole.role',
+      accessorKey: 'publicMetadata.userRole.role',
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title="Role" />
       ),
     },
     {
       id: 'Name',
-      accessorKey: 'name',
+      accessorKey: 'fullName',
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title="Name" />
+      ),
+      cell: ({ row }) => (
+        <div>
+          {row.original.firstName} {row.original.lastName}
+        </div>
       ),
     },
     {
       id: 'Email',
-      accessorKey: 'email',
+      accessorKey: 'emailAddresses[0].emailAddress',
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title="Email" />
+      ),
+      cell: ({ row }) => (
+        <div>{row.original.emailAddresses[0]?.emailAddress}</div>
       ),
     },
     {
       id: 'Phone',
-      accessorKey: 'phone',
+      accessorKey: 'publicMetadata.phoneNumber',
       header: ({ column }) => (
         <DataTableColumnHeader column={column} title="Phone" />
       ),
     },
-    {
-      id: 'Age',
-      accessorKey: 'age',
-      // The accessor function is used to convert the data to string to enable better filtering
-      accessorFn: (row) => `${row.age.toString()}`,
-      header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Age" />
-      ),
-    },
+    // {
+    //   id: 'Age',
+    //   accessorKey: 'age',
+    //   // The accessor function is used to convert the data to string to enable better filtering
+    //   accessorFn: (row) => `${row.age.toString()}`,
+    //   header: ({ column }) => (
+    //     <DataTableColumnHeader column={column} title="Age" />
+    //   ),
+    // },
     {
       id: 'Skill Level',
       accessorKey: 'skillLevel',
@@ -80,7 +94,8 @@ export default function UsersTable() {
         <DataTableColumnHeader column={column} title="Skill Level" />
       ),
       cell: ({ row }) => {
-        const skillLevel = row.original?.skillLevel?.level
+        const skillLevel = row.original?.publicMetadata?.skillLevel?.level
+
         return (
           skillLevel != undefined && (
             <Badge
@@ -131,8 +146,8 @@ export default function UsersTable() {
 
             <DeletionDialog
               nameOfData="user"
-              dataId={row.original.name}
-              dataToDelete={row.original}
+              dataId={row.original.fullName}
+              dataIdToDelete={row.original.id}
               dialogTrigger={<p></p>}
               isOpen={deletionDialogIsOpen}
               onOpenChanged={setDeletionDialogIsOpen}

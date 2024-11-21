@@ -52,8 +52,8 @@ export default function useHorses() {
 
   const horseDeletion = useMutation({
     mutationKey: ['delete-horse'],
-    mutationFn: async (horseToDelete: Horse) => {
-      await axios.delete(`/user?id=eq.${horseToDelete.id}`)
+    mutationFn: async (horseIdToDelete: string) => {
+      await axios.delete(`/user?id=eq.${horseIdToDelete}`)
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['horses'] })

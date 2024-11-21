@@ -52,8 +52,8 @@ export default function useAddresses() {
 
   const addressDeletion = useMutation({
     mutationKey: ['delete-address'],
-    mutationFn: async (addressToDelete: Address) => {
-      await axios.delete(`/address?id=eq.${addressToDelete.id}`)
+    mutationFn: async (addressIdToDelete: number) => {
+      await axios.delete(`/address?id=eq.${addressIdToDelete}`)
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['addresses'] })

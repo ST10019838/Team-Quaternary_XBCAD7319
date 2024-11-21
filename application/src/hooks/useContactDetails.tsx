@@ -55,8 +55,8 @@ export default function useContactDetails() {
 
   const contactDetailsDeletion = useMutation({
     mutationKey: ['delete-contact-details'],
-    mutationFn: async (contactDetailsToDelete: ContactDetails) => {
-      await axios.delete(`/contactDetails?id=eq.${contactDetailsToDelete.id}`)
+    mutationFn: async (contactDetailsIdToDelete: number) => {
+      await axios.delete(`/contactDetails?id=eq.${contactDetailsIdToDelete}`)
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['contact-details'] })

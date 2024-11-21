@@ -58,10 +58,38 @@ export default function PaymentDetailsTable() {
       ),
     },
     {
-      id: 'Payment Details',
-      accessorKey: 'paymentDetails',
+      id: 'Name',
+      accessorKey: 'name',
       header: ({ column }) => (
-        <DataTableColumnHeader column={column} title="Payment Details" />
+        <DataTableColumnHeader column={column} title="Name" />
+      ),
+    },
+    {
+      id: 'Bank',
+      accessorKey: 'bank',
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Bank" />
+      ),
+    },
+    {
+      id: 'Branch',
+      accessorKey: 'branch',
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Branch" />
+      ),
+    },
+    {
+      id: 'Branch Code',
+      accessorKey: 'branchCode',
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Branch Code" />
+      ),
+    },
+    {
+      id: 'Account Number',
+      accessorKey: 'accountNumber',
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Account Number" />
       ),
     },
     {
@@ -98,7 +126,7 @@ export default function PaymentDetailsTable() {
             <DeletionDialog
               nameOfData="payment details"
               dataId={row.original.id.toString()}
-              dataToDelete={row.original}
+              dataIdToDelete={row.original.id}
               dialogTrigger={<p></p>}
               isOpen={deletionDialogIsOpen}
               onOpenChanged={setDeletionDialogIsOpen}

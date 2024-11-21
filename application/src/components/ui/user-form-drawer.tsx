@@ -9,6 +9,7 @@ import { Button } from '@/components/shadcn-ui/button'
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -33,41 +34,52 @@ import {
   DrawerTitle,
   DrawerDescription,
 } from '@/components/shadcn-ui/drawer'
-import { User } from '@/models/user'
 import { CirclePlus, Loader2, Pencil, X } from 'lucide-react'
 import { ReactNode } from 'react'
 import { UseMutationResult } from '@tanstack/react-query'
 import useSkillLevels from '@/hooks/useSkillLevels'
 import useUserRoles from '@/hooks/useUserRoles'
+import { User } from '@clerk/nextjs/server'
+import { UserParams } from '@/models/user-params'
 
-const userSchema = z.object({
+const userCreationSchema = z.object({
   // id: z
   //   .number()
   //   .int()
   //   .positive()
   //   .or(z.string().regex(/^\d+$/).transform(Number)),
-  userRoleId: z.number().int(),
-  skillLevelId: z.number().int().nullable().optional(),
-  name: z
+  userRoleId: z.number({ required_error: 'A user role is required' }).int(),
+  skillLevelId: z.number({ required_error: 'A skill level is required' }).int(),
+  firstName: z
     .string()
     .min(3, { message: 'Name must be at least 3 characters long' })
     .max(50, { message: 'Name must not exceed 50 characters' }),
-  age: z
-    .number()
-    .int()
-    .positive()
-    .max(120, { message: 'Age must be 120 or less' })
-    .or(z.string().regex(/^\d+$/).transform(Number)),
-  email: z.string().email({ message: 'Invalid email address' }),
-  phone: z
+  lastName: z
     .string()
-    // .regex(/^\+?[1-9]\d{1,14}$/, { message: 'Invalid phone number format' })
-    .optional(),
+    .min(3, { message: 'Name must be at least 3 characters long' })
+    .max(50, { message: 'Name must not exceed 50 characters' }),
+  emailAddress: z
+    .string()
+    .email({ message: 'Invalid email address' })
+    .transform((val) => [val]),
+
+  /*  .array() */
+  phoneNumber: z.string().min(1, { message: 'A phone number is required' }),
+  // .array()
+  // .regex(/^\+?[1-9]\d{1,14}$/, { message: 'Invalid phone number format' })
+  // .optional(),
+  password: z
+    .string({
+      required_error: 'Password is required',
+    })
+    .min(8, 'Password must be at least 8 characters long'),
   // profilePicture: z.object({
   //   url: z.string().url({ message: 'Invalid URL format' }),
   //   alt: z.string().min(1, { message: 'Alt text is required' }),
   // }),
 })
+
+const userUpdationSchema = userCreationSchema.partial({ password: true })
 
 interface Props {
   mode?: 'create' | 'update'
@@ -75,7 +87,7 @@ interface Props {
   trigger?: ReactNode
   isOpen?: boolean
   onOpenChanged?: (open: boolean) => void
-  itemAction: UseMutationResult<void, Error, User, unknown>
+  itemAction: UseMutationResult<void, Error, UserParams, unknown>
 }
 
 export default function UserFormDrawer({
@@ -89,34 +101,41 @@ export default function UserFormDrawer({
   const { skillLevels } = useSkillLevels()
   const { userRoles } = useUserRoles()
 
-  const form = useForm<User>({
-    resolver: zodResolver(userSchema),
+  const form = useForm<UserParams>({
+    resolver: zodResolver(
+      mode === 'create' ? userCreationSchema : userUpdationSchema
+    ),
+    // Although there is an error on the following line, everything still works fine.
+    // Suprisigly, the fix to the following type error causes the app to not work as intended
     defaultValues:
       mode === 'update' && userToUpdate
         ? {
-            userRoleId: userToUpdate?.userRoleId,
-            skillLevelId: userToUpdate?.skillLevelId,
-            name: userToUpdate?.name,
-            age: userToUpdate?.age,
-            email: userToUpdate?.email,
-            phone: userToUpdate?.phone,
-            // profilePicture: { url: '', alt: '' },
+            userRoleId: userToUpdate?.publicMetadata?.userRole?.id,
+            skillLevelId: userToUpdate?.publicMetadata?.skillLevel?.id,
+            firstName: userToUpdate?.firstName || undefined,
+            lastName: userToUpdate?.lastName || undefined,
+            emailAddress: userToUpdate?.emailAddresses[0]?.emailAddress,
+            phoneNumber: userToUpdate?.publicMetadata?.phoneNumber,
           }
         : {
             userRoleId: 3,
-            skillLevelId: undefined,
-            name: '',
-            age: 0,
-            email: '',
-            phone: '',
-            // profilePicture: { url: '', alt: '' },
+            skillLevelId: 1,
+            firstName: '',
+            lastName: '',
           },
   })
 
-  const onSubmit = (data: User) => {
+  const onSubmit = (data: UserParams) => {
+    // fetch the appropriate skill level and user role based on the selected id
+    data.userRole = userRoles.data?.find((val) => val.id === data.userRoleId)!
+    data.skillLevel = skillLevels.data?.find(
+      (val) => val.id === data.userRoleId
+    )!
+
     if (mode === 'create') itemAction.mutate(data)
     else if (userToUpdate) {
-      data.id = userToUpdate?.id
+      data.userId = userToUpdate?.id
+
       itemAction.mutate(data)
     }
 
@@ -181,57 +200,65 @@ export default function UserFormDrawer({
                   </FormItem>
                 )}
               /> */}
+
+              <div className="flex items-center justify-between gap-3">
+                <FormField
+                  control={form.control}
+                  name="firstName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>First Name</FormLabel>
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="lastName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Last Name</FormLabel>
+                      <FormControl>
+                        <Input {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
               <FormField
                 control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Name</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="email"
+                name="emailAddress"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Email</FormLabel>
                     <FormControl>
-                      <Input type="email" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="age"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Age</FormLabel>
-                    <FormControl>
                       <Input
-                        type="number"
+                        readOnly={mode === 'update'}
+                        type="email"
                         {...field}
-                        onChange={(e) =>
-                          field.onChange(parseInt(e.target.value))
-                        }
                       />
                     </FormControl>
+                    <FormDescription>
+                      Note: As of now, a users email cannot be updated! Ensure
+                      everything is correct!
+                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
               />
+
               <FormField
                 control={form.control}
-                name="phone"
+                name="phoneNumber"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Phone (optional)</FormLabel>
+                    <FormLabel>Phone</FormLabel>
                     <FormControl>
                       <Input {...field} />
                     </FormControl>
@@ -239,6 +266,7 @@ export default function UserFormDrawer({
                   </FormItem>
                 )}
               />
+
               <FormField
                 control={form.control}
                 name="userRoleId"
@@ -309,6 +337,24 @@ export default function UserFormDrawer({
                         </Button>
                       )} */}
                     {/* </div> */}
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Password</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="password"
+                        placeholder="Enter your password"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
                   </FormItem>
                 )}
               />

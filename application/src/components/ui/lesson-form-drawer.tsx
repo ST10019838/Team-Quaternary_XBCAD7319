@@ -17,7 +17,9 @@ import { Input } from '@/components/shadcn-ui/input'
 import {
   Select,
   SelectContent,
+  SelectGroup,
   SelectItem,
+  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from '@/components/shadcn-ui/select'
@@ -32,7 +34,17 @@ import {
   DrawerTitle,
   DrawerDescription,
 } from '@/components/shadcn-ui/drawer'
-import { CalendarIcon, CirclePlus, Loader2, Pencil } from 'lucide-react'
+import {
+  CalendarIcon,
+  CirclePlus,
+  Loader2,
+  Network,
+  Pencil,
+  PiggyBank,
+  QrCode,
+  RectangleEllipsis,
+  User,
+} from 'lucide-react'
 import { ReactNode } from 'react'
 import { UseMutationResult } from '@tanstack/react-query'
 import { Textarea } from '../shadcn-ui/textarea'
@@ -41,15 +53,39 @@ import { compareAsc, format, isAfter } from 'date-fns'
 import { Popover, PopoverContent, PopoverTrigger } from '../shadcn-ui/popover'
 import { Calendar } from '../shadcn-ui/calendar'
 import { TimePicker } from './time-picker'
+import useAddresses from '@/hooks/useAddresses'
+import useContactDetails from '@/hooks/useContactDetails'
+import usePaymentDetails from '@/hooks/usePaymentDetails'
+
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/shadcn-ui/tooltip'
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from '@/components/shadcn-ui/hover-card'
+import { Separator } from '../shadcn-ui/separator'
+import useUsers from '@/hooks/useUsers'
+import useSkillLevels from '@/hooks/useSkillLevels'
 
 const lessonSchema = z
   .object({
-    title: z.string().min(2, {
-      message: 'Title must be at least 2 characters.',
-    }),
-    description: z.string().min(10, {
-      message: 'Description must be at least 10 characters.',
-    }),
+    title: z
+      .string()
+      .min(2, {
+        message: 'Title must be at least 2 characters.',
+      })
+      .max(100, 'Title must be 100 characters or less'),
+    description: z
+      .string()
+      .min(10, {
+        message: 'Description must be at least 10 characters.',
+      })
+      .max(500, 'Description must be 500 characters or less'),
     date: z.date({
       required_error: 'A date is required.',
     }),
@@ -59,15 +95,38 @@ const lessonSchema = z
     endTime: z.coerce.date({
       required_error: 'End time is required.',
     }),
-    contactNumber: z.string().min(1, { message: 'Contact number is required' }),
-    contactEmail: z.string().email({
-      message: 'Invalid email address.',
-    }),
-    address: z.string().min(5, {
-      message: 'Address must be at least 5 characters.',
-    }),
-    paymentAmount: z.number().positive(),
-    level: z.enum(['Beginner', 'Intermediate', 'Advanced']),
+    paymentAmount: z.coerce
+      .number({
+        required_error: 'Payment Amount is required',
+        invalid_type_error: 'Payment Amount is required',
+      })
+      .step(0.01, { message: 'Amount must not be longer than 2 decimals' })
+      .positive()
+      .finite()
+      .max(1000000, { message: 'Amount must not be more than 1 000 000' }),
+    skillLevelId: z.coerce
+      .number()
+      .int()
+      .positive('Skill Level must be a positive integer'),
+
+    addressId: z
+      .number()
+      .int()
+      .positive('Address ID must be a positive integer'),
+    contactDetailsId: z
+      .number()
+      .int()
+      .positive('Contact Details ID must be a positive integer'),
+    paymentDetailsId: z
+      .number()
+      .int()
+      .positive('Payment Details ID must be a positive integer'),
+    coachId: z.string().min(1, 'Coach ID must be a selected'),
+    totalSlots: z
+      .number()
+      .int()
+      .positive('Total slots must be a positive integer')
+      .max(20, "Can't have more than 20 slots"),
   })
   // The following refine was adapted from youtube.com
   // Author: Leigh Halliday (https://www.youtube.com/@leighhalliday)
@@ -102,6 +161,12 @@ export default function LessonFormDrawer({
   //       : { paymentDetails: '' },
   // })
 
+  const { users } = useUsers()
+  const { skillLevels } = useSkillLevels()
+  const { addresses } = useAddresses()
+  const { contactDetails } = useContactDetails()
+  const { paymentDetails } = usePaymentDetails()
+
   const form = useForm<Lesson>({
     resolver: zodResolver(lessonSchema),
     defaultValues:
@@ -112,11 +177,13 @@ export default function LessonFormDrawer({
             date: lessonToUpdate.date,
             startTime: lessonToUpdate.startTime,
             endTime: lessonToUpdate.endTime,
-            contactNumber: lessonToUpdate.contactEmail,
-            contactEmail: lessonToUpdate.contactEmail,
-            address: lessonToUpdate.address,
             paymentAmount: lessonToUpdate.paymentAmount,
-            level: lessonToUpdate.level,
+            skillLevelId: lessonToUpdate.skillLevelId,
+            addressId: lessonToUpdate.addressId,
+            contactDetailsId: lessonToUpdate.contactDetailsId,
+            paymentDetailsId: lessonToUpdate.paymentDetailsId,
+            coachId: lessonToUpdate.coachId,
+            totalSlots: lessonToUpdate.totalSlots,
           }
         : {
             title: '',
@@ -124,11 +191,13 @@ export default function LessonFormDrawer({
             date: new Date(),
             // startTime: new Date(),
             // endTime: new Date(),
-            contactNumber: '',
-            contactEmail: '',
-            address: '',
-            paymentAmount: 0,
-            level: 'Beginner',
+            paymentAmount: 0.0,
+            skillLevelId: 0,
+            addressId: 0,
+            contactDetailsId: 0,
+            paymentDetailsId: 0,
+            coachId: '',
+            totalSlots: 4,
           },
   })
 
@@ -190,7 +259,117 @@ export default function LessonFormDrawer({
 
         <div className="h-full overflow-auto p-5">
           <Form {...form}>
-            <form className="space-y-5">
+            <form
+              onSubmit={form.handleSubmit(onSubmit)}
+              className="space-y-5"
+              id="lesson-creation-form"
+            >
+              <FormField
+                control={form.control}
+                name="coachId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Coach</FormLabel>
+                    <Select
+                      // onValueChange={(value) => field.onChange(parseInt(value))}
+                      // defaultValue={field.value.toString()}
+
+                      onValueChange={field.onChange}
+                      defaultValue={field.value.toString()}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select a coach" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {/* fix coach selection */}
+                        {/* {mockCoaches.map((coach) => (
+                          <SelectItem
+                            key={coach.id}
+                            value={coach.id.toString()}
+                          >
+                            {coach.name}
+                          </SelectItem>
+                        ))} */}
+
+                        {users.data
+                          ?.filter(
+                            (val) =>
+                              val.publicMetadata.userRole.role === 'Coach' ||
+                              val.publicMetadata.userRole.id === 2
+                          )
+                          .map((coach) => {
+                            return (
+                              <SelectItem key={coach.id} value={coach.id}>
+                                {coach.firstName} {coach.lastName}
+                              </SelectItem>
+                            )
+                          })}
+                      </SelectContent>
+                    </Select>
+                    <FormDescription>The coach for the lesson.</FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="skillLevelId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Level</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value.toString()}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select a level" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {skillLevels?.data?.map((level) => (
+                          <SelectItem
+                            key={level.id}
+                            value={level.id.toString()}
+                          >
+                            {level.level}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="totalSlots"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Total Slots</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        {...field}
+                        onChange={(e) =>
+                          field.onChange(parseInt(e.target.value))
+                        }
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      The total number of slots available for this lesson.
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <Separator className="mx-auto w-3/5" />
+
               <FormField
                 control={form.control}
                 name="title"
@@ -227,6 +406,9 @@ export default function LessonFormDrawer({
                   </FormItem>
                 )}
               />
+
+              <Separator className="mx-auto w-3/5" />
+
               <FormField
                 control={form.control}
                 name="date"
@@ -330,46 +512,164 @@ export default function LessonFormDrawer({
                   )}
                 />
               </div>
+
+              <Separator className="mx-auto w-3/5" />
+
               <FormField
                 control={form.control}
-                name="contactNumber"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Contact Number</FormLabel>
-                    <FormControl>
-                      <Input type="tel" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="contactEmail"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Contact Email</FormLabel>
-                    <FormControl>
-                      <Input type="email" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="address"
+                name="addressId"
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Address</FormLabel>
-                    <FormControl>
-                      <Input {...field} />
-                    </FormControl>
+                    <Select
+                      onValueChange={(value) => field.onChange(parseInt(value))}
+                      defaultValue={field.value.toString()}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select an address" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {/* {mockAddresses.map((address) => (
+                          <SelectItem
+                            key={address.id}
+                            value={address.id.toString()}
+                          >
+                            {address.name}
+                          </SelectItem>
+                        ))} */}
+
+                        {addresses?.data?.map((address) => (
+                          <SelectItem
+                            key={address.id}
+                            value={address.id.toString()}
+                          >
+                            {address.address}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormDescription>
+                      The address where the lesson will take place.
+                    </FormDescription>
                     <FormMessage />
                   </FormItem>
                 )}
               />
               <FormField
+                control={form.control}
+                name="contactDetailsId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Contact Details (By Name)</FormLabel>
+                    <Select
+                      onValueChange={(value) => field.onChange(parseInt(value))}
+                      defaultValue={field.value.toString()}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select contact details" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {/* {mockContactDetails.map((contact) => (
+                          <SelectItem
+                            key={contact.id}
+                            value={contact.id.toString()}
+                          >
+                            {contact.name}
+                          </SelectItem>
+                        ))} */}
+
+                        {contactDetails?.data?.map((contact) => (
+                          <SelectItem
+                            key={contact.id}
+                            value={contact.id.toString()}
+                          >
+                            {contact.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormDescription>
+                      The contact details for the lesson.
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="paymentDetailsId"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Payment Details (By Account Number)</FormLabel>
+                    <Select
+                      onValueChange={(value) => field.onChange(parseInt(value))}
+                      defaultValue={field.value.toString()}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select payment details" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {/* {mockPaymentDetails.map((payment) => (
+                          <SelectItem
+                            key={payment.id}
+                            value={payment.id.toString()}
+                          >
+                            {payment.name}
+                          </SelectItem>
+                        ))} */}
+
+                        {paymentDetails?.data?.map((payment) => (
+                          <SelectItem
+                            key={payment.id}
+                            value={payment.id.toString()}
+                          >
+                            {payment?.accountNumber}
+
+                            {/* <div className="flex flex-col justify-center gap-3">
+                                <div className="flex items-center">
+                                  <RectangleEllipsis className="mr-2 h-4 w-4 text-muted-foreground" />
+                                  {payment?.accountNumber}
+                                </div>
+                              </div> */}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormDescription>
+                      The payment details for the lesson.
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="paymentAmount"
+                render={({ field }) => (
+                  <FormItem className="w-full">
+                    <FormLabel>Amount</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        step={'.01'}
+                        placeholder="00.00"
+                        min={0}
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              {/* <FormField
                 control={form.control}
                 name="paymentAmount"
                 render={({ field }) => (
@@ -385,43 +685,13 @@ export default function LessonFormDrawer({
                     <FormMessage />
                   </FormItem>
                 )}
-              />
-              <FormField
-                control={form.control}
-                name="level"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Level</FormLabel>
-                    <Select
-                      onValueChange={field.onChange}
-                      defaultValue={field.value}
-                    >
-                      <FormControl>
-                        <SelectTrigger>
-                          <SelectValue placeholder="Select a level" />
-                        </SelectTrigger>
-                      </FormControl>
-                      <SelectContent>
-                        <SelectItem value="Beginner">Beginner</SelectItem>
-                        <SelectItem value="Intermediate">
-                          Intermediate
-                        </SelectItem>
-                        <SelectItem value="Advanced">Advanced</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+              /> */}
             </form>
           </Form>
         </div>
 
         <DrawerFooter>
-          <Button
-            onClick={form.handleSubmit(onSubmit)}
-            disabled={itemAction.isPending}
-          >
+          <Button disabled={itemAction.isPending} form="lesson-creation-form">
             {mode === 'create' ? (
               itemAction.isPending ? (
                 <>

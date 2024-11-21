@@ -146,7 +146,7 @@ export default function HorsesTable() {
             <DeletionDialog
               nameOfData="horse"
               dataId={row.original.name}
-              dataToDelete={row.original}
+              dataIdToDelete={row.original.id}
               dialogTrigger={<p></p>}
               isOpen={deletionDialogIsOpen}
               onOpenChanged={setDeletionDialogIsOpen}

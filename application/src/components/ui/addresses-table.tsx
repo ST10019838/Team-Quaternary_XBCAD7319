@@ -85,7 +85,7 @@ export default function AddressesTable() {
             <DeletionDialog
               nameOfData="address"
               dataId={row.original.id.toString()}
-              dataToDelete={row.original}
+              dataIdToDelete={row.original.id}
               dialogTrigger={<p></p>}
               isOpen={deletionDialogIsOpen}
               onOpenChanged={setDeletionDialogIsOpen}

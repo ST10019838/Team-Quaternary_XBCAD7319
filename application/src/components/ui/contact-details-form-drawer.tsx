@@ -33,7 +33,7 @@ import {
   DrawerTitle,
   DrawerDescription,
 } from '@/components/shadcn-ui/drawer'
-import { User } from '@/models/user'
+import { User } from '@/models/user-params'
 import { CirclePlus, Loader2, Pencil } from 'lucide-react'
 import { ReactNode } from 'react'
 import { UseMutationResult } from '@tanstack/react-query'

@@ -1,11 +1,11 @@
 'use client'
 
 import { cn } from '@/lib/utils'
-import { BookCheck, UserCog } from 'lucide-react'
+import { BookCheck, DotIcon, UserCog } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { Button } from '../shadcn-ui/button'
-import { UserButton } from '@clerk/nextjs'
+import { UserButton, UserProfile } from '@clerk/nextjs'
 import { ThemeToggle } from './theme-switcher'
 
 const routes = [

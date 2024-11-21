@@ -1,3 +1,9 @@
+import { User } from '@clerk/nextjs/server'
+import { Address } from './address'
+import { ContactDetails } from './contact-details'
+import { PaymentDetails } from './payment-details'
+import { SkillLevel } from './skill-level'
+
 export interface Lesson {
   id: number
   title: string
@@ -6,12 +12,27 @@ export interface Lesson {
   // Fix start and end times types
   startTime: Date
   endTime: Date
-  contactNumber: string
-  contactEmail: string
-  address: string
+
   // Add more payment details
   paymentAmount: number
-  level: 'Beginner' | 'Intermediate' | 'Advanced'
+  skillLevelId: number
+  skillLevel?: SkillLevel
+
+  addressId: number
+  address?: Address
+
+  contactDetailsId: number
+  contactDetails?: ContactDetails
+
+  paymentDetailsId: number
+  paymentDetails?: PaymentDetails
+
+  // Fix coach id number
+  coachId: string
+
+  totalSlots: number
+  // slotsTaken is the bookingIds.length
+  bookingIds: number[]
 }
 
 export interface LessonBooking {

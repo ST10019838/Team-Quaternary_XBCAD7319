@@ -21,12 +21,13 @@ import { ReactNode, useState } from 'react'
 import { Button } from '@/components/shadcn-ui/button'
 
 import { Loader2, Trash2 } from 'lucide-react'
+import { UserParams } from '@/models/user-params'
 // import { useToast } from '@/hooks/use-toast';
 
 interface Props<TData> {
   nameOfData: string
-  dataId: string
-  dataToDelete: TData
+  dataId: string | number | null
+  dataIdToDelete: TData
   dialogTrigger?: ReactNode
   isOpen?: boolean
   onOpenChanged?: (open: boolean) => void
@@ -36,7 +37,7 @@ interface Props<TData> {
 export default function DeletionDialog<TData>({
   nameOfData,
   dataId,
-  dataToDelete,
+  dataIdToDelete,
   dialogTrigger,
   isOpen,
   onOpenChanged,
@@ -86,7 +87,7 @@ export default function DeletionDialog<TData>({
             variant="destructive"
             className="w-full gap-2 sm:w-max"
             onClick={() => {
-              itemDeletion.mutate(dataToDelete)
+              itemDeletion.mutate(dataIdToDelete)
             }}
             disabled={itemDeletion.isPending}
           >

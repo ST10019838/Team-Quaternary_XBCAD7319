@@ -1,27 +1,41 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import axios from '@/lib/axios'
-import { User } from '@/models/user'
+import a from 'axios'
 import { toast } from 'sonner'
+import {
+  createUser,
+  deleteUser,
+  getUserById,
+  getUsers,
+  updateUser,
+} from '@/server/actions'
+import { auth, currentUser, User } from '@clerk/nextjs/server'
+import { useAuth } from '@clerk/nextjs'
+import { UserParams } from '@/models/user-params'
 
-export default function useUsers() {
+const axios = a.create({
+  baseURL: 'https://api/clerk.com/v1',
+})
+
+export default function useUsers(userId: string | undefined = undefined) {
   const queryClient = useQueryClient()
 
   const users = useQuery({
     queryKey: ['users'],
     queryFn: async () => {
-      const { data } = await axios.get(
-        '/user?select=*,skillLevel(*),userRole(*)'
-      )
-      return data as User[]
+      const res = await getUsers()
+
+      return JSON.parse(JSON.stringify(res)) as User[]
     },
     refetchInterval: 1000 * 60 * 2, // refetch every 2 mins
     refetchIntervalInBackground: false,
   })
 
+  
+
   const userCreation = useMutation({
     mutationKey: ['create-user'],
-    mutationFn: async (newUser: User) => {
-      await axios.post('/user', newUser)
+    mutationFn: async (newUser: UserParams) => {
+      await createUser(newUser)
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['users'] })
@@ -37,8 +51,8 @@ export default function useUsers() {
 
   const userUpdation = useMutation({
     mutationKey: ['update-user'],
-    mutationFn: async (userToUpdate: User) => {
-      await axios.patch(`/user?id=eq.${userToUpdate.id}`, userToUpdate)
+    mutationFn: async (userToUpdate: UserParams) => {
+      await updateUser(userToUpdate)
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['users'] })
@@ -54,8 +68,10 @@ export default function useUsers() {
 
   const userDeletion = useMutation({
     mutationKey: ['delete-user'],
-    mutationFn: async (userToDelete: User) => {
-      await axios.delete(`/user?id=eq.${userToDelete.id}`)
+    mutationFn: async (userIdToDelete: string) => {
+      // await axios.delete(`/user?id=eq.${userToDelete.id}`)
+
+      await deleteUser(userIdToDelete)
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['users'] })
@@ -71,6 +87,7 @@ export default function useUsers() {
 
   return {
     users,
+    // userById,
     userCreation,
     userUpdation,
     userDeletion,

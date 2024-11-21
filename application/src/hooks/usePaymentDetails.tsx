@@ -55,8 +55,8 @@ export default function usePaymentDetails() {
 
   const paymentDetailsDeletion = useMutation({
     mutationKey: ['delete-payment-details'],
-    mutationFn: async (paymentDetailsToDelete: PaymentDetails) => {
-      await axios.delete(`/paymentDetails?id=eq.${paymentDetailsToDelete.id}`)
+    mutationFn: async (paymentDetailsIdToDelete: number) => {
+      await axios.delete(`/paymentDetails?id=eq.${paymentDetailsIdToDelete}`)
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['payment-details'] })

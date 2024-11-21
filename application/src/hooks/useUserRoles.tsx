@@ -9,7 +9,7 @@ export default function useUserRoles() {
     queryFn: async () => {
       const { data } = await axios.get('/userRole')
       return data as UserRole[]
-    }
+    },
   })
 
   return {

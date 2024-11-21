@@ -2,14 +2,33 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import axios from '@/lib/axios'
 import { toast } from 'sonner'
 import { Lesson } from '@/models/Lesson'
+import { format } from 'date-fns'
 
-export default function useLessons() {
+export default function useLessons({ selectedDate }: { selectedDate?: Date }) {
   const queryClient = useQueryClient()
 
-  const lessons = useQuery({
+  const allLessons = useQuery({
     queryKey: ['lessons'],
     queryFn: async () => {
-      const { data } = await axios.get('/lesson')
+      const { data } = await axios.get(
+        '/lesson?select=*,skillLevel(*),contactDetails(*),address(*),paymentDetails(*)'
+      )
+      return data as Lesson[]
+    },
+    refetchInterval: 1000 * 60 * 2, // refetch every 2 mins
+    refetchIntervalInBackground: false,
+  })
+
+  const lessonsForDate = useQuery({
+    queryKey: ['lessons-for-date'],
+    queryFn: async () => {
+      if (!selectedDate) return
+
+      const { data } = await axios.get(
+        `/lesson?date=eq.(${format(selectedDate, 'yyyy-MM-dd')})&select=*,skillLevel(*),contactDetails(*),address(*),paymentDetails(*))`
+      )
+
+      //,
       return data as Lesson[]
     },
     refetchInterval: 1000 * 60 * 2, // refetch every 2 mins
@@ -68,7 +87,8 @@ export default function useLessons() {
   })
 
   return {
-    lessons,
+    allLessons,
+    lessonsForDate,
     lessonCreation,
     lessonUpdation,
     lessonDeletion,
