@@ -39,12 +39,13 @@ jobs:
 
       # Step 5: Run Snyk Vulnerability Scan
       - name: Run Snyk vulnerability scan
-        uses: snyk/actions/node@v2
+        uses: snyk/actions@master
         with:
           args: test
         env:
-          # Ensure you set the SNYK_TOKEN in your repository's secrets
+      # Ensure you set the SNYK_TOKEN in your repository's secrets
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+
 
       # Step 6: Run vulnerability scan (npm audit)
       - name: Run vulnerability scan (npm audit)
