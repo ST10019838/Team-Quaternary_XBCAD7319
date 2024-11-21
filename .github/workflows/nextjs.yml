@@ -42,11 +42,15 @@ jobs:
         run: npm audit --production
         working-directory: application
 
-      # Step 6: Authenticate Snyk CLI
+      # Step 6: Install Snyk CLI
+      - name: Install Snyk CLI
+        run: npm install -g snyk
+
+      # Step 7: Authenticate Snyk CLI
       - name: Authenticate Snyk CLI
         run: snyk auth ${{ secrets.SNYK_TOKEN }}
 
-      # Step 7: Run Snyk vulnerability scan
+      # Step 8: Run Snyk vulnerability scan
       - name: Run Snyk vulnerability scan
         uses: snyk/actions@0.4.0
         with:
@@ -54,12 +58,12 @@ jobs:
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
-      # Step 8: Build the project (Uncomment if needed)
+      # Step 9: Build the project (Uncomment if needed)
       # - name: Build project
       #   run: npm run build
       #   working-directory: application
 
-      # Step 9: Upload build artifacts (Uncomment if needed)
+      # Step 10: Upload build artifacts (Uncomment if needed)
       # - name: Upload build artifacts
       #   uses: actions/upload-artifact@v3
       #   with:
