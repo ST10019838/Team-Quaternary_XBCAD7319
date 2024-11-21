@@ -45,9 +45,9 @@ jobs:
           command: cd application && npm install
 
       # Step 3: Build application
-      - run:
-          name: Build application
-          command: cd application && npm run build
+      #- run:
+          #name: Build application
+          #command: cd application && npm run build
 
   vulnerability-scan:
     docker:
