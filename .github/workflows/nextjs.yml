@@ -1,4 +1,4 @@
-name: CI for Next.js App
+name: Team_Quaternary_CI_Main
 
 on:
   push:
@@ -8,23 +8,22 @@ on:
     branches:
       - main
 
-#_______________________________SETUP_______________________________________________#
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
+      # Step 1: Checkout code
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Set working directory
-        run: cd application
-
+      # Step 2: Set up Node.js
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '20'
 
+      # Step 3: Cache node modules
       - name: Cache node modules
         uses: actions/cache@v3
         with:
@@ -33,78 +32,35 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
 
+      # Step 4: Install dependencies
       - name: Install dependencies
         run: npm install
         working-directory: application
 
-#_______________________________SETUP_______________________________________________#
-#_______________________________TEST________________________________________________#
+      # Step 5: Run linter (ESLint) requires fixing syntax in application
+      #- name: Run linter
+        #run: npm run lint
+        #working-directory: application
 
-      #-  name: Run tests
-        # run: npm run test
-        # working-directory: application
+      # Step 6: Run tests requires that jest be installed in package.json local testing
+      #- name: Run tests
+        #run: npm test
+        #working-directory: application
 
-#_______________________________SECURITY SCAN SETUP_______________________________________________#
+      # Step 7: Run vulnerability scan (npm audit)
+      - name: Run vulnerability scan (npm audit)
+        run: npm audit --production
+        working-directory: application
 
-      - name: Install .NET
-        uses: actions/setup-dotnet@v3
-        with:
-          dotnet-version: '6.0' # Use the required .NET version
-
-      - name: Setup Tools Directory and Manifest
-        run: |
-          echo "Starting setup..."
-          mkdir -p ./tools
-          cd ./tools
-          pwd  # Confirm current directory
-          echo "Creating tool manifest..."
-          # Use absolute path for clarity
-          MANIFEST_PATH=$(pwd)/dotnet-tools.json
-          dotnet new tool-manifest --force || { echo 'Failed to create tool manifest.' ; exit 1; }
-          echo "Manifest created successfully."
-          # List contents of the tools directory for debugging
-          echo "Contents of tools directory after creating manifest:"
-          ls -la  # List all files to check for dotnet-tools.json
-          # Explicitly check the current working directory
-          echo "Current directory after manifest creation:"
-          pwd
-          # Check if the manifest file is really there
-          if [ -f "$MANIFEST_PATH" ]; then
-            echo "Manifest file exists at $MANIFEST_PATH."
-          else
-            echo "Manifest file not found at $MANIFEST_PATH. Exiting..."
-            exit 1
-          fi
-          cd ..
-
-      - name: Install Security Code Scan as Project Tool
-        run: dotnet tool install SecurityCodeScan --tool-manifest ./tools/dotnet-tools.json --version 3.5.4
-
-      - name: Run Security Code Scan
-        run: |
-          ./tools/.store/securitycodescan/3.5.4/securitycodescan/3.5.4/tools/security-scan --output application/security-reports/security-code-scan.sarif --format sarif || { echo 'Security scan failed.'; exit 1; }
-
-      - name: Upload SARIF Report
-        uses: github/codeql-action/upload-sarif@v3
-        with:
-          sarif_file: application/security-reports/security-code-scan.sarif
-
-      #- name: SonarQube Scan
-        #uses: kitabisa/sonarqube-action@v1.2.1
-
-#_______________________________TEST________________________________________________#
-#______________________________BUILD________________________________________________#
-
+      # Step 8: Build the project
       - name: Build project
         run: npm run build
         working-directory: application
 
-#______________________________BUILD________________________________________________#
-#______________________________UPLOAD_______________________________________________#
+      # Step 9: Upload build artifacts (Next.js output)
       - name: Upload build artifacts
         if: success()
         uses: actions/upload-artifact@v3
         with:
           name: nextjs-build
           path: application/.next
-#______________________________UPLOAD_______________________________________________#
