@@ -48,18 +48,18 @@ jobs:
 
       # Step 7: Run Snyk vulnerability scan
       - name: Run Snyk vulnerability scan
-        uses: snyk/actions@v2.0.0  # Use specific version
+        uses: snyk/actions@latest  # Use the latest available version
         with:
           args: test
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
-      # Step 8: Build the project
+      # Step 8: Build the project (Uncomment if needed)
       # - name: Build project
       #   run: npm run build
       #   working-directory: application
 
-      # Step 9: Upload build artifacts
+      # Step 9: Upload build artifacts (Uncomment if needed)
       # - name: Upload build artifacts
       #   uses: actions/upload-artifact@v3
       #   with:
