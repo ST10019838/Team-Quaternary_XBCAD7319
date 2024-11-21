@@ -46,13 +46,16 @@ jobs:
       - name: Install Snyk CLI
         run: npm install -g snyk
 
-      # Step 7: Authenticate Snyk CLI (Causes Timeout)
+      # Step 7: Authenticate Snyk CLI
       #- name: Authenticate Snyk CLI
         #run: snyk auth ${{ secrets.SNYK_TOKEN }}
+        #env:
+          #SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
       # Step 8: Run Snyk vulnerability scan
       - name: Run Snyk vulnerability scan
         run: snyk test
+        working-directory: application
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
