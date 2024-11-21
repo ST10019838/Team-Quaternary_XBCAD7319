@@ -1,0 +1,84 @@
+version: 2.1
+
+# Define jobs to be invoked in workflows.
+jobs:
+  setup-and-test:
+    docker:
+      # Use a Node.js Docker image
+      - image: cimg/node:20.6
+    working_directory: ~/repo/application
+    steps:
+      # Step 1: Checkout code
+      - checkout
+
+      # Step 2: Cache dependencies to speed up subsequent builds
+      - restore_cache:
+          keys:
+            - v1-node-modules-{{ checksum "application/package-lock.json" }}
+      - run:
+          name: Install dependencies
+          command: cd application && npm install
+      - save_cache:
+          paths:
+            - application/node_modules
+          key: v1-node-modules-{{ checksum "application/package-lock.json" }}
+
+      # Step 3: Run tests (commented out for now)
+      # - run:
+      #     name: Run tests
+      #     command: cd application && npm test
+
+  build:
+    docker:
+      - image: cimg/node:20.6
+    working_directory: ~/repo/application
+    steps:
+      # Step 1: Checkout code
+      - checkout
+
+      # Step 2: Restore dependencies from cache
+      - restore_cache:
+          keys:
+            - v1-node-modules-{{ checksum "application/package-lock.json" }}
+      - run:
+          name: Install dependencies
+          command: cd application && npm install
+
+      # Step 3: Build application
+      - run:
+          name: Build application
+          command: cd application && npm run build
+
+  vulnerability-scan:
+    docker:
+      - image: cimg/node:20.6
+    working_directory: ~/repo/application
+    steps:
+      # Step 1: Checkout code
+      - checkout
+
+      # Step 2: Restore dependencies from cache
+      - restore_cache:
+          keys:
+            - v1-node-modules-{{ checksum "application/package-lock.json" }}
+      - run:
+          name: Install dependencies
+          command: cd application && npm install
+
+      # Step 3: Run security checks
+      - run:
+          name: Check for vulnerabilities
+          command: cd application && npm audit --audit-level=moderate
+
+# Define workflows to orchestrate the jobs.
+workflows:
+  version: 2
+  test-build-scan:
+    jobs:
+      - setup-and-test
+      - build:
+          requires:
+            - setup-and-test
+      - vulnerability-scan:
+          requires:
+            - setup-and-test
