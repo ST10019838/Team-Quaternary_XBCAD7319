@@ -48,11 +48,12 @@ jobs:
 
       # Step 7: Run Snyk vulnerability scan
       - name: Run Snyk vulnerability scan
-        uses: snyk/actions@latest  # Use the latest available version
+        uses: snyk/actions@v2  # Use the latest stable v2 version
         with:
           args: test
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+
 
       # Step 8: Build the project (Uncomment if needed)
       # - name: Build project
