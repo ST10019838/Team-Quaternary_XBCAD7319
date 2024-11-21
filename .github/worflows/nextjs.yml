@@ -1,0 +1,49 @@
+name: CI for Next.js App
+
+on:
+  push:
+    branches:
+      - CI/Pipeline  # Run on every push to the CI/Pipeline branch
+  pull_request:
+    branches:
+      - CI/Pipeline  # Run on every PR to the CI/Pipeline branch
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'  # Match local Node.js version
+
+      - name: Cache node modules
+        uses: actions/cache@v3
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run linter
+        run: npm run lint  # Assuming you have a lint script in package.json
+
+      - name: Run tests
+        run: npm run test  # Run your Next.js tests
+
+      - name: Build project
+        run: npm run build  # Build the Next.js project
+
+      - name: Upload build artifacts
+        if: success()
+        uses: actions/upload-artifact@v3
+        with:
+          name: nextjs-build
+          path: .next  # Uploads the build output folder
