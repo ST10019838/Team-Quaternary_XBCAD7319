@@ -52,11 +52,9 @@ jobs:
 
       # Step 8: Run Snyk vulnerability scan
       - name: Run Snyk vulnerability scan
-        uses: snyk/actions@0.4.0
-        with:
-          args: test
+        run: snyk test
         env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}   # Ensure this is passed properly
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
       # Step 9: Build the project (Uncomment if needed)
       # - name: Build project
