@@ -130,7 +130,7 @@ export default function UserFormDrawer({
     // fetch the appropriate skill level and user role based on the selected id
     data.userRole = userRoles.data?.find((val) => val.id === data.userRoleId)!
     data.skillLevel = skillLevels.data?.find(
-      (val) => val.id === data.userRoleId
+      (val) => val.id === data.skillLevelId
     )!
 
     if (mode === 'create') itemAction.mutate(data)
