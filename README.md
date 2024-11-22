@@ -10,44 +10,51 @@ Team Members:
 - ST10158660 - Ruan Zwarts
 
 </br>
+
+Main Repository Link:
+
+https://github.com/ST10091991/Team-Quaternary_XBCAD7319.git
+
+</br>
 NOTE:
 
-- The devops pipeline was set up on our main repository (the link can be found under the Links.txt file) and image proof can be found in the documentation folder.
+- **NB!**: The application is still being developed and bugs are to be expected. Updates will be made as the project is still ongoing as per the work agreement.
 
-- Check out the "How to Run" section and for the scripts to properly run the application
+- **NB!**: The approapriate environment variables are required to use the application. We did include the ".env.local" file so everything should be fine. (We understand that it is bad practice to include the ".env" files, however as this creates a security risk, we included it to ensure the application can be run.)
 
-- If the following error occurs when attempting to log in, restart the api:
+- If you run into any issues, please feel free to contact Damian to assist in the set up.
 
-```
-Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the client
-```
-
-(I tried finding this bug, but everything looks correct and it pops up randomly which makes it difficult to catch)
-
-- Don't forget to add your custom environment variables if you aren't able to connect to the online mongo Altas we have set up. Then don't forget to add an admin user by looking at the User-Mongoose.js file to see how to insert an Admin that can register other users! (Contact Damian or Christiaan to add IP address to Atlas if need be)
+- I forgot to mention in the tutorial that lessons of the users skill level will only be displayed. For example: "Beginner" level customers can only see and book "Beginner" level lessons
 
 </br>
 
-## Credentials (if using our Atlas)
+## Table of Contents
+
+- [Credentials](#credentials)
+- [Components of this repository](#components-of-this-repository)
+- [Project Description](#project-description)
+- [How to Use](#how-to-use)
+- [Project Set Up](#project-set-up)
+  - [Prequisites](#prequisites)
+  - [Installation](#installation)
+  - [How to Run](#how-to-run)
+- [Tech Stack](#tech-stack)
+
+</br>
+
+## Credentials
 
 **_Admin Account:_**
-- Username: Admin
-- Account Number: 100000000
-- Password: P1
+- Email: admin@gmail.com
+- Password: Password
 
-</br>
+**_Coach Account:_**
+- Email: coach@gmail.com
+- Password: Password
 
-**_Employee Account:_**
-- Username: Employee
-- Account Number: 100000001
-- Password: P1
-
-</br>
-
- **_User Account:_**
-- Username: User
-- Account Number: 100000002
-- Password: P1
+**_Customer Account:_**
+- Email: user@gmail.com
+- Password: Password
 
 </br>
 
@@ -57,13 +64,18 @@ Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the cli
 - documentation - a folder containing all documentation for the project (**PRIMARILY THE RESEARCH**)
 - tutorials - a folder containing all video tutorials for the project
 
-## Table of Contents
+</br>
 
-- [How to Use](#how-to-use)
-- [Project Set Up](#project-set-up)
-  - [Prequisites](#prequisites)
-  - [Installation](#installation)
-  - [How to Run](#how-to-run)
+# Project Description
+
+This application aims to streamline the horse riding lesson space by providing an efficient mechanism to allow users to quickly book horse riding lessons, and to allow staff to not only quickly create horse riding lessons but also manage them with ease.
+
+The primary functions / features of the application (so far...) include:
+
+- Lesson booking (users)
+- Lesson management (admins / coaches)
+- Partial user management (admins)
+- Data management for faster lesson creation (admins)
 
 </br>
 </br>
@@ -72,15 +84,7 @@ Error [ERR_HTTP_HEADERS_SENT]: Cannot set headers after they are sent to the cli
 
 The following tutorials can found be under the Tutorials folder:
 
-**_Part 2:_**
-
-- Team_Quaternary_APDS7311_Part2_Tutorial
-
-</br>
-
-**_Part 3:_**
-
-- Team_Quaternary_APDS7311_POE_Tutorial
+- Team_Quaternary_XBCAD7319_Tutorial
 
 </br>
 </br>
@@ -99,18 +103,10 @@ before using the application:
 
 ## Installation
 
-Under the Tutorials folder, refer to:
-
-- ST10019838_PROG7312_Installation_Tutorial
-
-</br>
-
-_or_
-
 1. Clone the repository **(NB: clone to a local drive)**:
 
 ```bash
- git clone https://github.com/ST10019838/Team-Quaternary_APDS7311_POE.git
+ git clone https://github.com/ST10091991/Team-Quaternary_XBCAD7319.git
 ```
 
 2. Open the repository folder under in VSCode
@@ -131,21 +127,22 @@ _or_
 
 2. Open a terminal in the project location
 
-3. Start the backend by running the following command in the terminal:
-
-```
- npm run dev-server
-```
-
-4. Open another terminal.
-
-5. Start the frontend by running the following command in the terminal:
+3. Start the application by running the following command in the terminal:
 
 ```
  npm run dev-https
 ```
 
+4. Navigate to "https://localhost:3000"
 
-6. Navigate to "https://localhost:3000" to view the front end of the application
+5. Enjoy!
 
-7. Enjoy!
+</br>
+
+## Tech Stack
+
+- Next.js (React Framework)
+- Database + Api (Supabase)
+- Clerk (Authentication)
+- Tailwind CSS (user interface)
+- shadcn/ui (user interface)
