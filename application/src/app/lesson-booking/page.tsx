@@ -61,8 +61,6 @@ export default function page() {
 
       const { data } = await axios.get(url)
 
-      console.log('GOTTE DATA', data)
-
       return JSON.parse(JSON.stringify(data[0])) as LessonBooking
     },
     refetchInterval: 1000 * 30, // refetch 30 seconds to keep up to date

@@ -120,11 +120,11 @@ export default function LessonSelectionCard({
                           : 'hover:bg-muted'
                       )}
                       onClick={() =>
-                        setSelectedLessonId(
-                          selectedLesson?.id === lesson.id
+                        setSelectedLessonId((val) => {
+                          return selectedLesson?.id === lesson.id
                             ? undefined
                             : lesson.id
-                        )
+                        })
                       }
                     >
                       <Badge>

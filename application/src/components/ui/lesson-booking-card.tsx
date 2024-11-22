@@ -180,22 +180,17 @@ export default function LessonBookingCard({
   async function onSubmit(
     data: BookingConfirmationFormData | LessonBookingFormData
   ) {
-    console.log(data)
-
     // setIsSubmitting(true)
     try {
       if ((isAdmin || isCoach) && lessonBooking !== undefined) {
         lessonBooking.confirmationPending = false
         lessonBooking.paymentConfirmed = data.paymentConfirmed!
 
-        console.log('WHATS HERE?', lessonBooking)
-
         lessonBookingUpdation.mutate(lessonBooking)
         return
       }
 
       const fileUploadPath = `${user?.id}/${nanoid()}`
-      console.log('file path:', fileUploadPath)
 
       await supabase.storage
         .from('proof-of-payments')
@@ -210,6 +205,7 @@ export default function LessonBookingCard({
         proofOfPayment: publicImageUrl,
         confirmationPending: true,
         paymentConfirmed: false,
+        messageForCoach: data?.messageForCoach,
       }
 
       lessonBookingCreation.mutate(newLessonBooking)
@@ -220,6 +216,7 @@ export default function LessonBookingCard({
       //   onOpenChanged(false)
       // }
     } catch (error) {
+      console.log(error)
       toast.error(`An error occurred: ${error}`)
     }
   }

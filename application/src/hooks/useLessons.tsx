@@ -48,7 +48,7 @@ export default function useLessons({
 
       const url =
         userData?.userRole.id === 3 && userData?.userRole.role === 'Customer'
-          ? `/lesson?date=eq.(${format(selectedDate, 'yyyy-MM-dd')})&skillLevel=eq.${userData?.skillLevel.id}&select=*,skillLevel(*),contactDetails(*),address(*),paymentDetails(*))`
+          ? `/lesson?date=eq.(${format(selectedDate, 'yyyy-MM-dd')})&skillLevelId=eq.${userData?.skillLevel.id}&select=*,skillLevel(*),contactDetails(*),address(*),paymentDetails(*))`
           : `/lesson?date=eq.(${format(selectedDate, 'yyyy-MM-dd')})&select=*,skillLevel(*),contactDetails(*),address(*),paymentDetails(*))`
 
       const { data } = await axios.get(url)
@@ -66,6 +66,7 @@ export default function useLessons({
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['lessons'] })
+      queryClient.invalidateQueries({ queryKey: ['lessons-for-date'] })
 
       lessonCreation.reset()
 

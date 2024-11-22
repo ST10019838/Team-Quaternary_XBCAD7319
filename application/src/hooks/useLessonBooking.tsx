@@ -26,7 +26,7 @@ export default function useLessonBooking() {
     mutationFn: async (newLesson: LessonBooking) => {
       // 1. get the latest id
       const res = await axios.get(`/lessonBooking?order=id.desc&limit=1`)
-      const newId = res.data[0].id ? res.data[0].id + 1 : 1
+      const newId = res?.data[0]?.id ? res.data[0].id + 1 : 1
 
       // 2. update the lesson by adding the lessosn booking id for easier reference
       const { data } = await axios.get(`/lesson?id=eq.${newLesson.lessonId}`)
@@ -58,6 +58,7 @@ export default function useLessonBooking() {
       toast.success('Successfully Added Lesson Booking')
     },
     onError: (error) => {
+      console.log(error)
       toast.error(`An error occurred: ${error.message}`)
     },
   })
