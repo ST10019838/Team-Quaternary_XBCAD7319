@@ -107,6 +107,7 @@ export default function UserFormDrawer({
     ),
     // Although there is an error on the following line, everything still works fine.
     // Suprisigly, the fix to the following type error causes the app to not work as intended
+    // @ts-expect-error
     defaultValues:
       mode === 'update' && userToUpdate
         ? {

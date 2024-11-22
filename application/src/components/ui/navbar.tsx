@@ -5,7 +5,7 @@ import { BookCheck, DotIcon, UserCog } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { Button } from '../shadcn-ui/button'
-import { UserButton, UserProfile } from '@clerk/nextjs'
+import { UserButton, UserProfile, useUser } from '@clerk/nextjs'
 import { ThemeToggle } from './theme-switcher'
 
 const routes = [
@@ -24,6 +24,10 @@ const routes = [
 
 export default function Navbar() {
   const path = usePathname()
+  const { user } = useUser()
+  const userData = user?.publicMetadata
+  const isAdmin =
+    userData?.userRole.role === 'Admin' && userData?.userRole.id === 1
 
   return (
     <div className="flex w-full items-center justify-between gap-5">
@@ -42,19 +46,21 @@ export default function Navbar() {
         </Button>
       ))} */}
 
-        <Button
-          variant={path.endsWith('/lesson-booking') ? 'default' : 'ghost'}
-          size="sm"
-          asChild
-        >
-          <Link
-            href={'/lesson-booking'}
-            className={cn('flex items-center gap-2')}
+        {isAdmin && (
+          <Button
+            variant={path.endsWith('/lesson-booking') ? 'default' : 'ghost'}
+            size="sm"
+            asChild
           >
-            <BookCheck className="size-4" />
-            Lessons
-          </Link>
-        </Button>
+            <Link
+              href={'/lesson-booking'}
+              className={cn('flex items-center gap-2')}
+            >
+              <BookCheck className="size-4" />
+              Lessons
+            </Link>
+          </Button>
+        )}
 
         <UserButton
           appearance={{
@@ -76,16 +82,18 @@ export default function Navbar() {
           }}
         />
 
-        <Button
-          variant={path.endsWith('/admin') ? 'default' : 'ghost'}
-          size="sm"
-          asChild
-        >
-          <Link href={'/admin'} className={cn('flex items-center gap-2')}>
-            <UserCog className="size-4" />
-            Admin
-          </Link>
-        </Button>
+        {isAdmin && (
+          <Button
+            variant={path.endsWith('/admin') ? 'default' : 'ghost'}
+            size="sm"
+            asChild
+          >
+            <Link href={'/admin'} className={cn('flex items-center gap-2')}>
+              <UserCog className="size-4" />
+              Admin
+            </Link>
+          </Button>
+        )}
       </div>
 
       <div className="ml-auto">

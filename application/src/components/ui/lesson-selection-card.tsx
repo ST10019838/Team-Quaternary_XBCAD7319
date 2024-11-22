@@ -33,18 +33,20 @@ import { ChartNoAxesColumnIncreasing } from 'lucide-react'
 import LessonFormDrawer from './lesson-form-drawer'
 import useLessons from '@/hooks/useLessons'
 import { Lesson } from '@/models/Lesson'
+import { useUser } from '@clerk/nextjs'
 
 interface Props {
   selectedLesson: Lesson | undefined
-  setSelectedLesson: Dispatch<SetStateAction<Lesson | undefined>>
+  setSelectedLessonId: Dispatch<SetStateAction<number | undefined>>
 }
 
 export default function LessonSelectionCard({
   selectedLesson,
-  setSelectedLesson,
+  setSelectedLessonId,
 }: Props) {
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date())
   const [formIsOpen, setFormIsOpen] = useState(false)
+  const { user } = useUser()
   const {
     allLessons,
     lessonsForDate,
@@ -54,7 +56,12 @@ export default function LessonSelectionCard({
   } = useLessons({ selectedDate })
   // const [selectedLesson, setSelectedLesson] = useState<Lesson | undefined>()
 
-  console.log(lessonsForDate.data)
+  const isAdmin =
+    user?.publicMetadata.userRole.id === 1 &&
+    user?.publicMetadata.userRole.role === 'Admin'
+  const isCoach =
+    user?.publicMetadata.userRole.id === 2 &&
+    user?.publicMetadata.userRole.role === 'Coach'
 
   useEffect(() => {
     async function refetch() {
@@ -66,13 +73,14 @@ export default function LessonSelectionCard({
 
   return (
     <>
-      <section className="flex h-full w-full max-w-max flex-grow flex-col gap-3 overflow-hidden">
+      {/* max-w-max */}
+      <section className="flex h-full w-full max-w-[278px] flex-grow flex-col gap-3 overflow-hidden">
         <Calendar
           mode="single"
           selected={selectedDate}
           onSelect={setSelectedDate}
           // REMOVE IF ADMIN / COACH
-          fromDate={new Date() /* undefined */}
+          fromDate={isAdmin || isCoach ? undefined : new Date()}
           className="max-w-max rounded-md border"
         />
 
@@ -98,21 +106,24 @@ export default function LessonSelectionCard({
                     Loading...
                   </div>
                 ) : lessonsForDate.isError ? (
-                  <div className="text-rose-500">
+                  <div className="max-w-full text-wrap text-rose-500">
                     Error: {lessonsForDate.error.message}
                   </div>
                 ) : lessonsForDate?.data?.length ? (
                   lessonsForDate?.data?.map((lesson) => (
                     <div
+                      key={lesson.id}
                       className={cn(
                         'flex w-full flex-col items-center justify-between gap-2 rounded-lg border p-3',
-                        selectedLesson?.id == lesson.id
+                        selectedLesson?.id === lesson.id
                           ? 'border-2 border-primary'
                           : 'hover:bg-muted'
                       )}
                       onClick={() =>
-                        setSelectedLesson(
-                          selectedLesson?.id === lesson.id ? undefined : lesson
+                        setSelectedLessonId(
+                          selectedLesson?.id === lesson.id
+                            ? undefined
+                            : lesson.id
                         )
                       }
                     >
@@ -137,18 +148,21 @@ export default function LessonSelectionCard({
               </CardContent>
 
               {/* Add button for admins / coaches only */}
-              <CardFooter className="mt-3">
-                <LessonFormDrawer
-                  mode={selectedLesson ? 'update' : 'create'}
-                  lessonToUpdate={selectedLesson ? selectedLesson : undefined}
-                  trigger={<Button className="w-full">Add Lesson</Button>}
-                  isOpen={formIsOpen}
-                  onOpenChanged={(newValue) => setFormIsOpen(() => newValue)}
-                  itemAction={
-                    /* selectedLesson ? lessonUpdation :  */ lessonCreation
-                  }
-                />
-              </CardFooter>
+              {(isAdmin || isCoach) && (
+                <CardFooter className="mt-3">
+                  <LessonFormDrawer
+                    // mode={selectedLesson ? 'update' : 'create'}
+                    mode={'create'}
+                    lessonToUpdate={selectedLesson ? selectedLesson : undefined}
+                    trigger={<Button className="w-full">Add Lesson</Button>}
+                    isOpen={formIsOpen}
+                    onOpenChanged={(newValue) => setFormIsOpen(() => newValue)}
+                    itemAction={
+                      /* selectedLesson ? lessonUpdation :  */ lessonCreation
+                    }
+                  />
+                </CardFooter>
+              )}
             </>
           )}
         </Card>

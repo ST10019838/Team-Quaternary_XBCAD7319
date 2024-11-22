@@ -36,16 +36,19 @@ export interface Lesson {
 }
 
 export interface LessonBooking {
-  id: number
+  id?: number
   lessonId: number
-  userId: number
-  horseId?: number
+  lesson?: Lesson
+  userId: string
+  // horseId?: number
 
+  confirmationPending: boolean
   paymentConfirmed: boolean
+
   usingPersonalHorse: boolean
 
   messageForCoach?: string
-  proofOfPayment?: string
+  proofOfPayment: string
 
   // lesson?: Lesson
   // horse?: Horse

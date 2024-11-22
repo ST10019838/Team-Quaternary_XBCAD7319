@@ -17,7 +17,7 @@ export default function page() {
       <Tabs defaultValue="users" className="flex flex-col">
         <TabsList className="mx-auto">
           <TabsTrigger value="users">Users</TabsTrigger>
-          <TabsTrigger value="horses">Horses</TabsTrigger>
+          {/* <TabsTrigger value="horses">Horses</TabsTrigger> */}
           <TabsTrigger value="addresses">Addresses</TabsTrigger>
           <TabsTrigger value="contact_details">Contact Details</TabsTrigger>
           <TabsTrigger value="payment_details">Payment Details</TabsTrigger>
@@ -25,9 +25,9 @@ export default function page() {
         <TabsContent value="users">
           <UsersTable />
         </TabsContent>
-        <TabsContent value="horses">
+        {/* <TabsContent value="horses">
           <HorsesTable />
-        </TabsContent>
+        </TabsContent> */}
         <TabsContent value="addresses">
           <AddressesTable />
         </TabsContent>

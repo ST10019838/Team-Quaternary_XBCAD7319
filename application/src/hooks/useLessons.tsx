@@ -3,16 +3,35 @@ import axios from '@/lib/axios'
 import { toast } from 'sonner'
 import { Lesson } from '@/models/Lesson'
 import { format } from 'date-fns'
+import { useUser } from '@clerk/nextjs'
+import { getCurrentUser } from '@/server/actions'
 
-export default function useLessons({ selectedDate }: { selectedDate?: Date }) {
+export default function useLessons({
+  selectedDate,
+  selectedBookingId = undefined,
+  useAdmin = undefined,
+}: {
+  selectedDate?: Date
+  selectedBookingId?: number
+  useAdmin?: boolean
+}) {
   const queryClient = useQueryClient()
 
   const allLessons = useQuery({
     queryKey: ['lessons'],
     queryFn: async () => {
+      const user = await getCurrentUser()
+
+      const url =
+        useAdmin && selectedBookingId
+          ? `/lessonBooking?id=eq.${selectedBookingId}&select=*,lesson(*,address(*),skillLevel(*),contactDetails(*),paymentDetails(*))`
+          : `/lessonBooking?lesson.date=gte.(${format(new Date(), 'yyyy-MM-dd')})&userId=eq.(${user?.id!})&select=*,lesson(*,address(*),skillLevel(*),contactDetails(*),paymentDetails(*))`
+
       const { data } = await axios.get(
-        '/lesson?select=*,skillLevel(*),contactDetails(*),address(*),paymentDetails(*)'
+        // '/lesson?select=*,skillLevel(*),contactDetails(*),address(*),paymentDetails(*)'
+        url
       )
+
       return data as Lesson[]
     },
     refetchInterval: 1000 * 60 * 2, // refetch every 2 mins
@@ -22,13 +41,18 @@ export default function useLessons({ selectedDate }: { selectedDate?: Date }) {
   const lessonsForDate = useQuery({
     queryKey: ['lessons-for-date'],
     queryFn: async () => {
-      if (!selectedDate) return
+      if (!selectedDate) return null
 
-      const { data } = await axios.get(
-        `/lesson?date=eq.(${format(selectedDate, 'yyyy-MM-dd')})&select=*,skillLevel(*),contactDetails(*),address(*),paymentDetails(*))`
-      )
+      const user = await getCurrentUser()
+      const userData = user?.publicMetadata
 
-      //,
+      const url =
+        userData?.userRole.id === 3 && userData?.userRole.role === 'Customer'
+          ? `/lesson?date=eq.(${format(selectedDate, 'yyyy-MM-dd')})&skillLevel=eq.${userData?.skillLevel.id}&select=*,skillLevel(*),contactDetails(*),address(*),paymentDetails(*))`
+          : `/lesson?date=eq.(${format(selectedDate, 'yyyy-MM-dd')})&select=*,skillLevel(*),contactDetails(*),address(*),paymentDetails(*))`
+
+      const { data } = await axios.get(url)
+
       return data as Lesson[]
     },
     refetchInterval: 1000 * 60 * 2, // refetch every 2 mins

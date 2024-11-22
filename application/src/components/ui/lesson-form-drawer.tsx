@@ -696,23 +696,23 @@ export default function LessonFormDrawer({
               itemAction.isPending ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  <span>Adding Payment Details...</span>
+                  <span>Adding Lesson...</span>
                 </>
               ) : (
                 <>
                   <CirclePlus className="mr-1 size-4" />
-                  <span>Add Payment Details</span>
+                  <span>Add Lesson</span>
                 </>
               )
             ) : itemAction.isPending ? (
               <>
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                <span>Updating Payment Details...</span>
+                <span>Updating Lesson...</span>
               </>
             ) : (
               <>
                 <Pencil className="mr-1 size-4" />
-                <span>Update Payment Details</span>
+                <span>Update Lesson</span>
               </>
             )}
           </Button>

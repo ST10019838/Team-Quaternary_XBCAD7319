@@ -1,54 +1,101 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Separator } from '@/components/shadcn-ui/separator'
 import { Button } from '@/components/shadcn-ui/button'
 import LessonBookingCard from '@/components/ui/lesson-booking-card'
-import { Lesson } from '@/models/Lesson'
+import { Lesson, LessonBooking } from '@/models/Lesson'
 import LessonInformationCard from '@/components/ui/lesson-information-card'
 import LessonSelectionCard from '@/components/ui/lesson-selection-card'
 import useUsers from '@/hooks/useUsers'
-
-const exampleLesson: Lesson = {
-  id: 1,
-  title: 'Tennis Lesson with Coach Nick',
-  description:
-    'Improve your tennis skills with personalized coaching. This lesson focuses on perfecting your serve and backhand techniques. Suitable for intermediate players.',
-  date: new Date(),
-  startTime: new Date(),
-  endTime: new Date(),
-  // Fix contact number
-  contactDetailsId: 9,
-  contactDetails: {
-    id: 9,
-    name: 'Person',
-    phone: '1234567890',
-    email: 'coach.nick@example.com',
-  },
-
-  addressId: 3,
-  address: {
-    id: 3,
-    address: '123 Tennis Court Lane, Sportsville, SP 12345',
-  },
-  paymentAmount: 75.0,
-  skillLevel: 'Intermediate',
-
-  paymentDetailsId: 1,
-  paymentDetails: {
-    id: 1,
-    // paymentDetails: string
-    name: 'Damian Dare',
-    bank: 'Capitec',
-    branch: 'IDK BRO',
-    branchCode: 1232,
-    accountNumber: 123212,
-  },
-}
+import { useQuery } from '@tanstack/react-query'
+import axios from '@/lib/axios'
+import BookedLessonsCard from '@/components/ui/booked-lessons-card'
+import { isAborted } from 'zod'
+import { useUser } from '@clerk/nextjs'
+import { format } from 'date-fns'
 
 export default function page() {
-  const [selectedLesson, setSelectedLesson] = useState<Lesson | undefined>()
-  const { useCoach } = useUsers()
+  const [selectedLessonId, setSelectedLessonId] = useState<number | undefined>()
+  const [selectedBookingId, setSelectedBookingId] = useState<
+    number | undefined
+  >()
+
+  const { user, isSignedIn, isLoaded } = useUser()
+  const isAdmin =
+    user?.publicMetadata.userRole.id === 1 &&
+    user?.publicMetadata.userRole.role === 'Admin'
+  const isCoach =
+    user?.publicMetadata.userRole.id === 2 &&
+    user?.publicMetadata.userRole.role === 'Coach'
+
+  // This is done to ensure everything is up to date
+  const selectedLesson = useQuery({
+    queryKey: ['selected-lesson'],
+    queryFn: async () => {
+      if (!selectedLessonId) return
+
+      const { data } = await axios.get(
+        `/lesson?id=eq.${selectedLessonId}&select=*,skillLevel(*),contactDetails(*),address(*),paymentDetails(*))`
+      )
+
+      return JSON.parse(JSON.stringify(data[0])) as Lesson
+    },
+    refetchInterval: 1000 * 30, // refetch 30 seconds to keep up to date
+    refetchIntervalInBackground: false,
+  })
+
+  const selectedBooking = useQuery({
+    queryKey: ['selected-booking'],
+    queryFn: async () => {
+      if (isLoaded) {
+        if (!isSignedIn) {
+          if (!selectedBookingId) return
+        }
+      }
+
+      const url =
+        (isAdmin || isCoach) && selectedBookingId !== undefined
+          ? `/lessonBooking?id=eq.${selectedBookingId}&select=*,lesson(*,address(*),skillLevel(*),contactDetails(*),paymentDetails(*))`
+          : `/lessonBooking?lesson.date=gte.(${format(new Date(), 'yyyy-MM-dd')})&userId=eq.(${user?.id!})&select=*,lesson(*,address(*),skillLevel(*),contactDetails(*),paymentDetails(*))`
+
+      const { data } = await axios.get(url)
+
+      console.log('GOTTE DATA', data)
+
+      return JSON.parse(JSON.stringify(data[0])) as LessonBooking
+    },
+    refetchInterval: 1000 * 30, // refetch 30 seconds to keep up to date
+    refetchIntervalInBackground: false,
+  })
+
+  console.log(selectedBooking.data)
+
+  useEffect(() => {
+    async function refresh() {
+      await selectedLesson.refetch()
+    }
+
+    // keep trying to refetch data until something is found
+    if (selectedLesson.data) {
+      return
+    }
+
+    refresh()
+  }, [selectedLessonId])
+
+  useEffect(() => {
+    async function refresh() {
+      await selectedBooking.refetch()
+    }
+
+    // keep trying to refetch data until something is found
+    if (selectedBooking.data) {
+      return
+    }
+
+    refresh()
+  }, [selectedBookingId])
 
   return (
     <div
@@ -135,8 +182,8 @@ export default function page() {
       <div className="flex max-w-max flex-grow basis-0 flex-col items-center justify-center gap-2">
         <div className="flex-grow basis-0 overflow-auto">
           <LessonSelectionCard
-            selectedLesson={selectedLesson}
-            setSelectedLesson={setSelectedLesson}
+            selectedLesson={selectedLessonId ? selectedLesson.data : undefined}
+            setSelectedLessonId={setSelectedLessonId}
           />
         </div>
       </div>
@@ -145,37 +192,61 @@ export default function page() {
 
       <div className="flex max-w-max flex-grow basis-0 flex-col gap-2">
         <div className="flex-grow basis-0 overflow-auto">
-          <LessonInformationCard lesson={selectedLesson} />
+          <LessonInformationCard
+            lesson={selectedLessonId ? selectedLesson.data : undefined}
+          />
         </div>
       </div>
 
       <div className="flex max-w-max flex-grow basis-0 flex-col gap-2">
         <div className="flex-grow basis-0 overflow-auto">
-          <LessonBookingCard lesson={selectedLesson} />
+          <LessonBookingCard
+            lessonBooking={selectedBookingId ? selectedBooking.data : undefined}
+            lesson={
+              selectedLessonId ? selectedLesson.data : undefined
+              // selectedBookingId
+              //   ? selectedBooking.data?.lesson
+              //   : selectedLessonId
+              //     ? selectedLesson.data
+              //     : undefined
+            }
+          />
         </div>
       </div>
 
       <Separator className="my-auto h-3/4 w-0.5" />
 
-      <div className="flex max-w-max flex-grow basis-0 flex-col gap-2">
+      <div className="flex max-w-max flex-grow basis-0 flex-col items-center justify-center gap-2">
         <div className="flex-grow basis-0 overflow-auto">
-          {/* Upcoming Lessons Section */}
+          <BookedLessonsCard
+            selectedBooking={
+              selectedBookingId ? selectedBooking.data : undefined
+            }
+            selectedLesson={selectedLessonId ? selectedLesson.data : undefined}
+            setSelectedBookingId={setSelectedBookingId}
+          />
+        </div>
+      </div>
+
+      {/* <div className="flex max-w-max flex-grow basis-0 flex-col gap-2">
+        <div className="flex-grow basis-0 overflow-auto">
+          Upcoming Lessons Section
           <div className="flex h-full w-72 max-w-xs flex-col gap-2 rounded-md border p-4">
             <p className="mx-auto">Your Upcoming Lessons</p>
 
             <Separator className="mx-auto h-0.5 w-3/4" />
 
             <div className="flex max-h-fit grow flex-col gap-20 overflow-auto bg-rose-500">
-              {/* Come back to */}
-              {/* <div className="bg-blue-500">Item 1</div>
+              Come back to
               <div className="bg-blue-500">Item 1</div>
               <div className="bg-blue-500">Item 1</div>
               <div className="bg-blue-500">Item 1</div>
-              <div className="bg-blue-500">Item 1</div> */}
+              <div className="bg-blue-500">Item 1</div>
+              <div className="bg-blue-500">Item 1</div>
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
     </div>
   )
 }

@@ -2,7 +2,7 @@
 
 import { clerkClient } from '@/lib/clerk-client'
 import { UserParams } from '@/models/user-params'
-import { /* clerkClient ,*/ User } from '@clerk/nextjs/server'
+import { /* clerkClient ,*/ currentUser, User } from '@clerk/nextjs/server'
 
 // Handle errors
 
@@ -13,6 +13,15 @@ export async function getUsers() {
   // Author: amir rasooli (https://stackoverflow.com/users/10708719/amir-rasooli)
   // Link: https://stackoverflow.com/questions/77091418/warning-only-plain-objects-can-be-passed-to-client-components-from-server-compo
   return JSON.parse(JSON.stringify(response.data))
+}
+
+export async function getCurrentUser() {
+  const response = await currentUser()
+
+  // The following line was adapted from stackoverflow.com
+  // Author: amir rasooli (https://stackoverflow.com/users/10708719/amir-rasooli)
+  // Link: https://stackoverflow.com/questions/77091418/warning-only-plain-objects-can-be-passed-to-client-components-from-server-compo
+  return JSON.parse(JSON.stringify(response)) as User
 }
 
 export async function getUserById(userId: string) {
